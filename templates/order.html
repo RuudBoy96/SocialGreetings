@@ -163,6 +163,10 @@
                 <span>{% if card.card_type == 'stats' %}Stats card{% elif card.card_type == 'wordmap' %}Word map card{% else %}Love messages card{% endif %}</span>
             </div>
             <div class="summary-item">
+                <label>Occasion</label>
+                <span>{{ card.occasion|default('birthday')|title }}</span>
+            </div>
+            <div class="summary-item">
                 <label>Platform theme</label>
                 <span>{{ card.platform|default('whatsapp')|title }}</span>
             </div>

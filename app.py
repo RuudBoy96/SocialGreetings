@@ -8,7 +8,15 @@ from werkzeug.utils import secure_filename
 
 from extractor import process_chat
 from parsers import detect_participants, extract_contact_name, parse_chat_export
-from platforms import DEFAULT_SLIDE_CAPTIONS, INSIDE_FONTS, INSIDE_FONT_SIZES, ORIENTATIONS, PLATFORMS
+from platforms import (
+    DEFAULT_OCCASION,
+    DEFAULT_SLIDE_CAPTIONS,
+    INSIDE_FONTS,
+    INSIDE_FONT_SIZES,
+    OCCASIONS,
+    ORIENTATIONS,
+    PLATFORMS,
+)
 from stats import AVAILABLE_STATS, compute_stats
 from wordmap import compute_word_map
 
@@ -74,13 +82,20 @@ def extract_card_settings(form) -> dict:
     if inside_font_size not in INSIDE_FONT_SIZES:
         inside_font_size = "medium"
 
+    occasion = form.get("occasion", DEFAULT_OCCASION)
+    if occasion not in OCCASIONS:
+        occasion = DEFAULT_OCCASION
+
+    slide_captions = list(OCCASIONS[occasion].get("captions") or DEFAULT_SLIDE_CAPTIONS)
+
     return {
         "platform": platform,
         "orientation": orientation,
+        "occasion": occasion,
         "inside_message": form.get("inside_message", "").strip(),
         "inside_font": inside_font,
         "inside_font_size": inside_font_size,
-        "slide_captions": list(DEFAULT_SLIDE_CAPTIONS),
+        "slide_captions": slide_captions,
     }
 
 
@@ -116,6 +131,7 @@ def create_love():
             "create.html",
             platforms=PLATFORMS,
             orientations=ORIENTATIONS,
+            occasions=OCCASIONS,
             inside_fonts=INSIDE_FONTS,
             inside_font_sizes=INSIDE_FONT_SIZES,
         )
@@ -174,6 +190,7 @@ def create_stats():
             stat_options=AVAILABLE_STATS,
             platforms=PLATFORMS,
             orientations=ORIENTATIONS,
+            occasions=OCCASIONS,
             inside_fonts=INSIDE_FONTS,
             inside_font_sizes=INSIDE_FONT_SIZES,
         )
@@ -228,6 +245,7 @@ def create_wordmap():
             "create_wordmap.html",
             platforms=PLATFORMS,
             orientations=ORIENTATIONS,
+            occasions=OCCASIONS,
             inside_fonts=INSIDE_FONTS,
             inside_font_sizes=INSIDE_FONT_SIZES,
         )

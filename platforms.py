@@ -24,6 +24,40 @@ ORIENTATIONS = {
     "landscape": {"id": "landscape", "label": "Landscape", "width": "7in", "height": "5in"},
 }
 
+# Occasions the card is marketed and tailored for. Each occasion provides its own
+# default slide captions and a suggested inside message so the generated card reads
+# naturally for that celebration.
+OCCASIONS = {
+    "birthday": {
+        "id": "birthday",
+        "label": "Birthday",
+        "icon": "🎂",
+        "accent": "#f59e0b",
+        "captions": [
+            "Every message, a reason to celebrate you…",
+            "All the little things we love about you",
+            "Happy Birthday — with all my love",
+            "",
+        ],
+        "inside_suggestion": "Happy Birthday! Here's to another year of moments like these.",
+    },
+    "anniversary": {
+        "id": "anniversary",
+        "label": "Anniversary",
+        "icon": "💞",
+        "accent": "#ec4899",
+        "captions": [
+            "Every message tells our story…",
+            "The things we love, together",
+            "Happy Anniversary — with all my love",
+            "",
+        ],
+        "inside_suggestion": "Happy Anniversary. Every day with you is still my favourite.",
+    },
+}
+
+DEFAULT_OCCASION = "birthday"
+
 INSIDE_FONTS = {
     "classic": {"id": "classic", "label": "Classic Serif", "family": "Georgia, 'Times New Roman', serif"},
     "modern": {"id": "modern", "label": "Modern Sans", "family": "Inter, -apple-system, sans-serif"},

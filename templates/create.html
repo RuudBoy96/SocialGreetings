@@ -20,7 +20,16 @@
         </div>
 
         <div class="form-section" id="options-section" hidden>
-            <h3>Platform &amp; layout</h3>
+            <h3>Occasion</h3>
+            <label for="occasion">What are you celebrating?</label>
+            <select name="occasion" id="occasion">
+                {% for key, o in occasions.items() %}
+                <option value="{{ o.id }}">{{ o.icon }} {{ o.label }}</option>
+                {% endfor %}
+            </select>
+            <p class="field-hint">We'll tailor the cover captions to the occasion.</p>
+
+            <h3 class="section-divider">Platform &amp; layout</h3>
 
             <label for="platform">Messaging platform</label>
             <select name="platform" id="platform">
