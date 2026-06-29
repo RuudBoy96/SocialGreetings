@@ -1,0 +1,93 @@
+.export-guide {
+    margin-top: 2rem;
+    background: var(--surface);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+}
+
+.export-guide-title {
+    margin: 0 0 0.35rem;
+    font-size: 1.05rem;
+}
+
+.export-guide-sub {
+    margin: 0 0 1.1rem;
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    line-height: 1.5;
+}
+
+.export-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+}
+
+.export-tab {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--surface-2);
+    color: var(--text-muted);
+    border-radius: 999px;
+    padding: 0.45rem 1rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.export-tab:hover {
+    color: var(--text);
+    border-color: rgba(139, 92, 246, 0.4);
+}
+
+.export-tab.is-active {
+    background: var(--gradient);
+    color: #fff;
+    border-color: transparent;
+}
+
+.export-tab-icon {
+    margin-right: 0.15rem;
+}
+
+.export-panel {
+    display: none;
+    animation: export-fade 0.2s ease;
+}
+
+.export-panel.is-active {
+    display: block;
+}
+
+@keyframes export-fade {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.export-steps {
+    margin: 0;
+    padding-left: 1.3rem;
+    color: var(--text);
+    font-size: 0.9rem;
+    line-height: 1.7;
+}
+
+.export-steps li {
+    margin-bottom: 0.35rem;
+}
+
+.export-note {
+    margin: 1rem 0 0;
+    padding: 0.75rem 1rem;
+    background: var(--surface-2);
+    border-radius: 10px;
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    line-height: 1.5;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .export-panel { animation: none; }
+}

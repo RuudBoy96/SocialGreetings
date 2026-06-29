@@ -2,6 +2,10 @@
 
 {% block title %}Create a card — SocialGreetings{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/export_guide.css') }}">
+{% endblock %}
+
 {% block content %}
 <section class="create-page create-page-wide">
     <div class="create-header">
@@ -95,17 +99,11 @@
         </button>
     </form>
 
-    <div class="create-tips">
-        <h4>How to export your chat</h4>
-        <ul class="platform-tips">
-            {% for key, p in platforms.items() %}
-            <li><strong>{{ p.icon }} {{ p.name }}:</strong> {{ p.export_hint }}</li>
-            {% endfor %}
-        </ul>
-    </div>
+    {% include "partials/export_guide.html" %}
 </section>
 {% endblock %}
 
 {% block extra_js %}
 <script src="{{ url_for('static', filename='js/create.js') }}"></script>
+<script src="{{ url_for('static', filename='js/export_guide.js') }}"></script>
 {% endblock %}

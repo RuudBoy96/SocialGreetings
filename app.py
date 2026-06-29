@@ -510,6 +510,11 @@ def privacy():
     return render_template("privacy.html", retention_minutes=RETENTION_MINUTES)
 
 
+@app.route("/how-to-export")
+def how_to_export():
+    return render_template("how_to_export.html", platforms=PLATFORMS)
+
+
 @app.route("/api/preview-participants", methods=["POST"])
 def preview_participants():
     if "chat_file" not in request.files:

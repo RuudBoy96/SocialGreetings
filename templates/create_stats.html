@@ -2,6 +2,10 @@
 
 {% block title %}Create Stats Card — SocialGreetings{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/export_guide.css') }}">
+{% endblock %}
+
 {% block content %}
 <section class="create-page create-page-wide">
     <div class="create-header">
@@ -102,9 +106,12 @@
             Generate stats card
         </button>
     </form>
+
+    {% include "partials/export_guide.html" %}
 </section>
 {% endblock %}
 
 {% block extra_js %}
 <script src="{{ url_for('static', filename='js/create.js') }}"></script>
+<script src="{{ url_for('static', filename='js/export_guide.js') }}"></script>
 {% endblock %}

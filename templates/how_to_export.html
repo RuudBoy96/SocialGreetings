@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}How to export your chat — SocialGreetings{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/export_guide.css') }}">
+{% endblock %}
+
+{% block content %}
+<section class="create-page create-page-wide">
+    <div class="create-header">
+        <div class="hero-badge">📤 Export in under a minute</div>
+        <h1>How to export your chat</h1>
+        <p>Your card is built from a chat export file. Follow the steps for your app, then come
+            back and upload the .txt file — no account linking required.</p>
+    </div>
+
+    {% include "partials/export_guide.html" %}
+
+    <div class="legal-footer" style="margin-top:2rem;">
+        <a href="{{ url_for('create_hub') }}" class="btn btn-primary btn-lg">Create your card</a>
+        <a href="{{ url_for('privacy') }}" class="btn btn-ghost btn-lg">Privacy &amp; security</a>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/export_guide.js') }}"></script>
+{% endblock %}
