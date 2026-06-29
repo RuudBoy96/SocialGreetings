@@ -1,0 +1,258 @@
+/* Stats card — WhatsApp-themed infographic */
+.stats-card-page {
+    --wa-header: #008069;
+    --wa-bg: #efeae2;
+    --wa-text: #111b21;
+    --wa-meta: #667781;
+    --wa-accent: #008069;
+    --wa-sent: #d9fdd3;
+    --wa-received: #ffffff;
+    --wa-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+    color: var(--wa-text);
+    background-color: var(--wa-bg);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    font-family: var(--wa-font);
+    border: 1px dashed #bbb;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+    position: relative;
+}
+
+.stats-card-page.orientation-portrait { width: 5in; height: 7in; }
+.stats-card-page.orientation-landscape { width: 7in; height: 5in; }
+
+.stats-body {
+    flex: 1;
+    overflow: hidden;
+    padding: 8px 10px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    color: var(--wa-text);
+}
+
+.stats-title-bar {
+    text-align: center;
+    padding: 4px 0 2px;
+}
+
+.stats-title-bar h2 {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--wa-text);
+    letter-spacing: -0.02em;
+}
+
+.stats-title-bar p {
+    margin: 2px 0 0;
+    font-size: 9px;
+    color: var(--wa-meta);
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+    flex-shrink: 0;
+}
+
+.stat-tile {
+    background: var(--wa-received);
+    border-radius: 8px;
+    padding: 7px 8px;
+    box-shadow: 0 1px 0.5px rgba(11, 20, 26, 0.13);
+    color: var(--wa-text);
+}
+
+.stat-tile.wide {
+    grid-column: 1 / -1;
+}
+
+.stat-tile.highlight {
+    background: var(--wa-sent);
+}
+
+.stat-tile .stat-icon {
+    font-size: 11px;
+    line-height: 1;
+    margin-bottom: 2px;
+}
+
+.stat-tile .stat-value {
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.1;
+    color: var(--wa-text);
+}
+
+.stat-tile .stat-value.sm {
+    font-size: 13px;
+}
+
+.stat-tile .stat-label {
+    font-size: 8px;
+    color: var(--wa-meta);
+    margin-top: 2px;
+    line-height: 1.2;
+}
+
+/* Charts */
+.chart-block {
+    background: var(--wa-received);
+    border-radius: 8px;
+    padding: 7px 8px;
+    box-shadow: 0 1px 0.5px rgba(11, 20, 26, 0.13);
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    color: var(--wa-text);
+}
+
+.chart-block h3 {
+    margin: 0 0 5px;
+    font-size: 9px;
+    font-weight: 600;
+    color: var(--wa-text);
+}
+
+.bar-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+    flex: 1;
+    min-height: 50px;
+    padding-top: 2px;
+}
+
+.bar-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    height: 100%;
+    min-width: 0;
+}
+
+.bar-fill {
+    width: 100%;
+    max-width: 14px;
+    background: var(--wa-accent);
+    border-radius: 2px 2px 0 0;
+    min-height: 2px;
+    transition: height 0.3s;
+    opacity: 0.85;
+}
+
+.bar-col.peak .bar-fill {
+    background: #25d366;
+    opacity: 1;
+}
+
+.bar-label {
+    font-size: 5.5px;
+    color: var(--wa-meta);
+    margin-top: 2px;
+    writing-mode: horizontal-tb;
+}
+
+.bar-label.every-3rd {
+    visibility: visible;
+}
+
+.bar-label:not(.show) {
+    color: transparent;
+}
+
+/* Monthly trend */
+.trend-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+    flex: 1;
+    min-height: 44px;
+}
+
+.trend-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    height: 100%;
+}
+
+.trend-fill {
+    width: 100%;
+    background: linear-gradient(180deg, #25d366 0%, var(--wa-accent) 100%);
+    border-radius: 2px 2px 0 0;
+    min-height: 2px;
+}
+
+.trend-label {
+    font-size: 5px;
+    color: var(--wa-meta);
+    margin-top: 2px;
+    transform: rotate(-45deg);
+    transform-origin: top center;
+    white-space: nowrap;
+}
+
+.emoji-row {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.emoji-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+}
+
+.emoji-stat .emoji {
+    font-size: 16px;
+    line-height: 1;
+}
+
+.emoji-stat .count {
+    font-size: 7px;
+    color: var(--wa-meta);
+}
+
+.first-love-quote {
+    font-size: 8px;
+    color: var(--wa-text);
+    font-style: italic;
+    margin-top: 3px;
+    line-height: 1.3;
+    border-left: 2px solid var(--wa-accent);
+    padding-left: 6px;
+}
+
+.stats-empty {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 20px;
+    font-size: 11px;
+    color: var(--wa-meta);
+}
+
+@media print {
+    .stats-card-page,
+    .stat-tile,
+    .chart-block,
+    .stat-value,
+    .stats-title-bar h2 {
+        color: #111b21 !important;
+    }
+}

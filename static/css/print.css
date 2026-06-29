@@ -1,0 +1,76 @@
+/* Print-optimised output for PDF download */
+@media print {
+    @page {
+        size: 5in 7in;
+        margin: 0;
+    }
+
+    body.print-landscape @page {
+        size: 7in 5in;
+    }
+
+    body {
+        background: white !important;
+        margin: 0;
+        padding: 0;
+    }
+
+    .navbar,
+    .footer,
+    .card-toolbar,
+    .presenter-controls,
+    .inside-editor-panel,
+    .no-print,
+    .flash-container,
+    .order-page-actions {
+        display: none !important;
+    }
+
+    .card-viewer,
+    .presenter-layout,
+    .presenter-main {
+        padding: 0;
+        margin: 0;
+        max-width: none;
+    }
+
+    .carousel-viewport {
+        overflow: visible;
+        background: none;
+        padding: 0;
+    }
+
+    .carousel-track {
+        display: block !important;
+        transform: none !important;
+    }
+
+    .carousel-slide {
+        display: flex !important;
+        justify-content: center;
+        page-break-after: always;
+        break-after: page;
+        min-width: auto;
+        width: 100%;
+    }
+
+    .carousel-slide--optional:not(.is-visible) {
+        display: none !important;
+    }
+
+    .carousel-slide:last-child {
+        page-break-after: auto;
+        break-after: auto;
+    }
+
+    .card-page,
+    .stats-card-page {
+        box-shadow: none !important;
+        border: none !important;
+    }
+
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+}

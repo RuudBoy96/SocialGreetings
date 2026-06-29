@@ -1,0 +1,127 @@
+{% if not card.has_love_data %}
+<div class="stats-empty">
+    No "love you" messages found in this chat.<br>Try a different export or card type.
+</div>
+{% else %}
+
+<div class="stats-grid">
+    {% if 'total_love_you' in card.selected_stats %}
+    <div class="stat-tile highlight">
+        <div class="stat-icon">💚</div>
+        <div class="stat-value">{{ card.total_love_you }}</div>
+        <div class="stat-label">Times you've said love you</div>
+    </div>
+    {% endif %}
+
+    {% if 'who_says_more' in card.selected_stats and card.who_says_more %}
+    <div class="stat-tile">
+        <div class="stat-icon">🏆</div>
+        <div class="stat-value sm">{{ card.who_says_more.short_name }}</div>
+        <div class="stat-label">Says it more ({{ card.who_says_more.count }}×)</div>
+    </div>
+    {% endif %}
+
+    {% if 'peak_hour' in card.selected_stats %}
+    <div class="stat-tile">
+        <div class="stat-icon">🕐</div>
+        <div class="stat-value sm">{{ card.peak_hour_label }}</div>
+        <div class="stat-label">Peak hour for love-yous</div>
+    </div>
+    {% endif %}
+
+    {% if 'days_chatting' in card.selected_stats %}
+    <div class="stat-tile">
+        <div class="stat-icon">📅</div>
+        <div class="stat-value">{{ card.days_chatting }}</div>
+        <div class="stat-label">Days you've been chatting</div>
+    </div>
+    {% endif %}
+
+    {% if 'avg_per_month' in card.selected_stats %}
+    <div class="stat-tile">
+        <div class="stat-icon">📊</div>
+        <div class="stat-value sm">{{ card.avg_per_month }}</div>
+        <div class="stat-label">Avg love-yous per month</div>
+    </div>
+    {% endif %}
+
+    {% if 'busiest_day' in card.selected_stats %}
+    <div class="stat-tile">
+        <div class="stat-icon">📆</div>
+        <div class="stat-value sm">{{ card.busiest_day }}</div>
+        <div class="stat-label">Busiest day of the week</div>
+    </div>
+    {% endif %}
+
+    {% if 'total_messages' in card.selected_stats %}
+    <div class="stat-tile">
+        <div class="stat-icon">💬</div>
+        <div class="stat-value">{{ card.total_messages }}</div>
+        <div class="stat-label">Total messages in chat</div>
+    </div>
+    {% endif %}
+
+    {% if 'longest_gap' in card.selected_stats %}
+    <div class="stat-tile">
+        <div class="stat-icon">⏳</div>
+        <div class="stat-value sm">{{ card.longest_gap_days }}d</div>
+        <div class="stat-label">Longest gap between love-yous</div>
+    </div>
+    {% endif %}
+
+    {% if 'first_love_you' in card.selected_stats %}
+    <div class="stat-tile wide">
+        <div class="stat-icon">✨</div>
+        <div class="stat-value sm">First: {{ card.first_love_you.date }} at {{ card.first_love_you.time }}</div>
+        <div class="stat-label">by {{ card.first_love_you.sender }}</div>
+        {% if card.first_love_you.message %}
+        <div class="first-love-quote">"{{ card.first_love_you.message }}"</div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% if 'top_emojis' in card.selected_stats and card.top_emojis %}
+    <div class="stat-tile wide">
+        <div class="stat-icon">😍</div>
+        <div class="stat-label" style="margin-bottom:4px">Favourite love emojis</div>
+        <div class="emoji-row">
+            {% for item in card.top_emojis %}
+            <div class="emoji-stat">
+                <span class="emoji">{{ item.emoji }}</span>
+                <span class="count">{{ item.count }}×</span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+{% if 'hourly_chart' in card.selected_stats %}
+<div class="chart-block">
+    <h3>🕐 When you say it — hourly breakdown</h3>
+    <div class="bar-chart">
+        {% for bar in card.hourly_chart %}
+        <div class="bar-col{% if bar.hour == card.peak_hour %} peak{% endif %}">
+            <div class="bar-fill" style="height: {{ bar.pct }}%"></div>
+            <span class="bar-label{% if bar.hour % 3 == 0 %} show{% endif %}">{{ '%02d'|format(bar.hour) }}</span>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+{% if 'monthly_trend' in card.selected_stats and card.monthly_trend %}
+<div class="chart-block">
+    <h3>📈 Love-yous over time</h3>
+    <div class="trend-chart">
+        {% for month in card.monthly_trend %}
+        <div class="trend-col">
+            <div class="trend-fill" style="height: {{ (month.count / card.max_monthly * 100)|round|int }}%"></div>
+            <span class="trend-label">{{ month.label }}</span>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+{% endif %}

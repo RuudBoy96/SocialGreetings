@@ -1,0 +1,264 @@
+{% extends "base.html" %}
+
+{% block title %}Order your card — SocialGreetings{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/print.css') }}">
+<style>
+.order-page {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 2.5rem 2rem 4rem;
+}
+
+.order-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.order-header h1 {
+    margin: 0 0 0.5rem;
+    font-size: 1.75rem;
+}
+
+.order-header p {
+    color: var(--text-muted);
+    margin: 0;
+}
+
+.order-summary {
+    background: var(--surface);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.order-summary h2 {
+    margin: 0 0 1rem;
+    font-size: 1rem;
+}
+
+.summary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem 1.5rem;
+}
+
+.summary-item label {
+    display: block;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    margin-bottom: 0.2rem;
+}
+
+.summary-item span {
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.inside-preview {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.inside-preview blockquote {
+    margin: 0.5rem 0 0;
+    font-style: italic;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.order-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+}
+
+.order-specs,
+.print-partners {
+    background: var(--surface);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.order-specs h3,
+.print-partners h3 {
+    margin: 0 0 0.75rem;
+    font-size: 0.95rem;
+}
+
+.order-specs ul,
+.print-partners ul {
+    margin: 0;
+    padding-left: 1.2rem;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    line-height: 1.7;
+}
+
+.partner-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin-top: 1rem;
+}
+
+.partner-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    background: var(--surface-2);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    transition: border-color 0.15s;
+}
+
+.partner-link:hover {
+    border-color: rgba(139, 92, 246, 0.35);
+}
+
+.partner-link strong {
+    font-size: 0.9rem;
+}
+
+.partner-link span {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+}
+
+.order-footer-links {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 500px) {
+    .summary-grid { grid-template-columns: 1fr; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="order-page">
+    <div class="order-header">
+        <h1>Order your card</h1>
+        <p>Review your card details, download a print-ready PDF, then send it to a print service.</p>
+    </div>
+
+    <div class="order-summary">
+        <h2>Card summary</h2>
+        <div class="summary-grid">
+            <div class="summary-item">
+                <label>Card type</label>
+                <span>{% if card.card_type == 'stats' %}Stats card{% elif card.card_type == 'wordmap' %}Word map card{% else %}Love messages card{% endif %}</span>
+            </div>
+            <div class="summary-item">
+                <label>Platform theme</label>
+                <span>{{ card.platform|default('whatsapp')|title }}</span>
+            </div>
+            <div class="summary-item">
+                <label>Orientation</label>
+                <span>{{ card.orientation|default('portrait')|title }} ({{ dims }})</span>
+            </div>
+            <div class="summary-item">
+                <label>Pages</label>
+                <span>{{ page_count }} pages</span>
+            </div>
+            {% if card.card_type == 'wordmap' %}
+            <div class="summary-item">
+                <label>Words analysed</label>
+                <span>{{ "{:,}".format(card.total_words|default(0)) }} · {{ "{:,}".format(card.unique_words|default(0)) }} unique</span>
+            </div>
+            {% elif card.card_type != 'stats' %}
+            <div class="summary-item">
+                <label>Messages</label>
+                <span>{{ card.total_count }} packed</span>
+            </div>
+            {% else %}
+            <div class="summary-item">
+                <label>Love-yous analysed</label>
+                <span>{{ card.total_love_you }}</span>
+            </div>
+            {% endif %}
+            <div class="summary-item">
+                <label>For</label>
+                <span>{{ card.receiver_name }} · {{ card.contact_name }}</span>
+            </div>
+        </div>
+        {% if card.inside_message %}
+        <div class="inside-preview">
+            <label style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;">Inside message</label>
+            <blockquote>{{ card.inside_message }}</blockquote>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="order-actions order-page-actions">
+        {% if card.card_type == 'stats' %}
+        <a href="{{ url_for('view_stats_card', card_id=card.card_id) }}?print=1" target="_blank" class="btn btn-primary btn-lg btn-full">Download print PDF</a>
+        <a href="{{ url_for('view_stats_card', card_id=card.card_id) }}" class="btn btn-ghost btn-full">Back to preview</a>
+        {% elif card.card_type == 'wordmap' %}
+        <a href="{{ url_for('view_wordmap_card', card_id=card.card_id) }}?print=1" target="_blank" class="btn btn-primary btn-lg btn-full">Download print PDF</a>
+        <a href="{{ url_for('view_wordmap_card', card_id=card.card_id) }}" class="btn btn-ghost btn-full">Back to preview</a>
+        {% else %}
+        <a href="{{ url_for('view_card', card_id=card.card_id) }}?print=1" target="_blank" class="btn btn-primary btn-lg btn-full">Download print PDF</a>
+        <a href="{{ url_for('view_card', card_id=card.card_id) }}" class="btn btn-ghost btn-full">Back to preview</a>
+        {% endif %}
+    </div>
+
+    <div class="order-specs">
+        <h3>Print specifications</h3>
+        <ul>
+            <li><strong>Size:</strong> {{ dims }} ({{ card.orientation|default('portrait') }})</li>
+            <li><strong>Resolution:</strong> Export at 300 DPI for best results</li>
+            <li><strong>Bleed:</strong> Add 3 mm bleed if your printer requires it</li>
+            <li><strong>Colour:</strong> Save as PDF with background graphics enabled</li>
+        </ul>
+    </div>
+
+    <div class="print-partners">
+        <h3>Send to a print service</h3>
+        <p style="margin:0 0 0.5rem;font-size:0.85rem;color:var(--text-muted);">
+            Download your PDF above, then upload it to one of these services:
+        </p>
+        <div class="partner-links">
+            <a href="https://www.printed.com/" target="_blank" rel="noopener" class="partner-link">
+                <div>
+                    <strong>Printed.com</strong><br>
+                    <span>UK — upload PDF, greeting cards</span>
+                </div>
+                <span>→</span>
+            </a>
+            <a href="https://www.prodigi.com/" target="_blank" rel="noopener" class="partner-link">
+                <div>
+                    <strong>Prodigi</strong><br>
+                    <span>Global print API &amp; manual orders</span>
+                </div>
+                <span>→</span>
+            </a>
+            <a href="https://www.gelato.com/" target="_blank" rel="noopener" class="partner-link">
+                <div>
+                    <strong>Gelato</strong><br>
+                    <span>Global network, greeting cards</span>
+                </div>
+                <span>→</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="order-footer-links">
+        <a href="{{ url_for('landing') }}" class="btn btn-ghost btn-sm">Home</a>
+        <a href="{{ url_for('create_hub') }}" class="btn btn-ghost btn-sm">Create new card</a>
+    </div>
+</section>
+{% endblock %}

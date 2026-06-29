@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.env
+venv/
+.venv/
+
+# App data — chat uploads and generated cards (private/large)
+uploads/
+generated/
+
+# Local test artifacts
+test_out.txt
+extracted_messages.json
+WhatsApp Chat with Kim Butler.txt
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+*.swp

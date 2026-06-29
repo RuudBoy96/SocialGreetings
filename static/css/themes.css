@@ -1,0 +1,310 @@
+/* ── Platform themes via data-platform on .card-page ── */
+
+.card-page {
+    --chat-header-bg: #008069;
+    --chat-header-text: #ffffff;
+    --chat-header-status: rgba(255, 255, 255, 0.85);
+    --chat-bg: #efeae2;
+    --chat-bg-image: url("../img/whatsapp-wallpaper.svg");
+    --chat-bg-size: 300px 300px;
+    --chat-sent: #d9fdd3;
+    --chat-sent-text: #111b21;
+    --chat-received: #ffffff;
+    --chat-received-text: #111b21;
+    --chat-meta: #667781;
+    --chat-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --bubble-radius: 7.5px;
+    --bubble-tail: block;
+    --inside-bg: #faf8f5;
+}
+
+.card-page[data-platform="whatsapp"] {
+    --chat-header-bg: #008069;
+    --chat-sent: #d9fdd3;
+    --chat-received: #ffffff;
+    --chat-bg: #efeae2;
+    --chat-bg-image: url("../img/whatsapp-wallpaper.svg");
+    --chat-bg-size: 300px 300px;
+}
+
+.card-page[data-platform="imessage"] {
+    --chat-header-bg: rgba(248, 248, 248, 0.94);
+    --chat-header-text: #000000;
+    --chat-header-status: #8e8e93;
+    --chat-bg: #ffffff;
+    --chat-bg-image: none;
+    --chat-bg-size: auto;
+    --chat-sent: #007aff;
+    --chat-sent-text: #ffffff;
+    --chat-received: #e9e9eb;
+    --chat-received-text: #000000;
+    --chat-meta: rgba(255, 255, 255, 0.65);
+    --chat-font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+    --bubble-radius: 18px;
+    --bubble-tail: none;
+    --inside-bg: #f2f2f7;
+}
+
+.card-page[data-platform="imessage"] .message.received .timestamp {
+    color: #8e8e93;
+}
+
+.card-page[data-platform="messenger"] {
+    --chat-header-bg: #ffffff;
+    --chat-header-text: #050505;
+    --chat-header-status: #65676b;
+    --chat-bg: #ffffff;
+    --chat-bg-image: none;
+    --chat-bg-size: auto;
+    --chat-sent: #0084ff;
+    --chat-sent-text: #ffffff;
+    --chat-received: #f0f0f0;
+    --chat-received-text: #050505;
+    --chat-meta: rgba(255, 255, 255, 0.7);
+    --chat-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --bubble-radius: 18px;
+    --bubble-tail: none;
+    --inside-bg: #f0f2f5;
+}
+
+.card-page[data-platform="messenger"] .message.received .timestamp {
+    color: #65676b;
+}
+
+.card-page {
+    color: var(--chat-received-text);
+    background-color: var(--chat-bg);
+    background-image: var(--chat-bg-image);
+    background-size: var(--chat-bg-size, 300px 300px);
+    background-repeat: repeat;
+    font-family: var(--chat-font);
+}
+
+.card-page.orientation-portrait { width: 5in; height: 7in; }
+.card-page.orientation-landscape { width: 7in; height: 5in; }
+
+.chat-header {
+    background: var(--chat-header-bg);
+    color: var(--chat-header-text);
+    padding: 6px 10px 6px 4px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    min-height: 50px;
+    z-index: 10;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.imessage-header {
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}
+
+.messenger-header { box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08); }
+
+.chat-header-left {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    min-width: 0;
+    flex: 1;
+}
+
+.header-back {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    flex-shrink: 0;
+}
+
+.imessage-back svg { stroke: #007aff; }
+.messenger-back svg { stroke: #0084ff; }
+
+.header-back svg {
+    width: 22px;
+    height: 22px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.header-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #dfe5e7;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 2px;
+}
+
+.imessage-avatar { background: #c7c7cc; }
+.messenger-avatar { background: linear-gradient(135deg, #a334fa, #0084ff); }
+.messenger-avatar svg { fill: #ffffff; }
+
+.header-avatar svg {
+    width: 20px;
+    height: 20px;
+    fill: #8696a0;
+}
+
+.header-contact {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    margin-left: 8px;
+}
+
+.header-name {
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--chat-header-text);
+}
+
+.header-status {
+    font-size: 12px;
+    color: var(--chat-header-status);
+    line-height: 1.2;
+}
+
+.messenger-active { display: flex; align-items: center; gap: 4px; }
+
+.active-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #31a24c;
+    display: inline-block;
+}
+
+.chat-header-right {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    flex-shrink: 0;
+    padding-right: 4px;
+}
+
+.imessage-actions .header-icon-btn svg { stroke: #007aff; }
+.messenger-actions .header-icon-btn svg { stroke: #0084ff; }
+
+.header-icon-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+}
+
+.header-icon-btn svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.chat-body { color: var(--chat-received-text); }
+
+.message { border-radius: var(--bubble-radius); color: inherit; }
+.message-text { color: inherit; }
+
+.message.sent {
+    background-color: var(--chat-sent);
+    color: var(--chat-sent-text);
+}
+
+.message.sent .message-text { color: var(--chat-sent-text); }
+
+.message.received {
+    background-color: var(--chat-received);
+    color: var(--chat-received-text);
+}
+
+.message.received .message-text { color: var(--chat-received-text); }
+.message .timestamp { color: var(--chat-meta); }
+
+.message.sent::before,
+.message.received::before { display: var(--bubble-tail); }
+
+.card-page[data-platform="imessage"] .message.sent,
+.card-page[data-platform="messenger"] .message.sent {
+    border-top-right-radius: var(--bubble-radius);
+}
+
+.card-page[data-platform="imessage"] .message.received,
+.card-page[data-platform="messenger"] .message.received {
+    border-top-left-radius: var(--bubble-radius);
+}
+
+.card-page-inside {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.2rem 1.5rem;
+    background: var(--inside-bg);
+    color: #1a1a1a;
+    text-align: center;
+    overflow: hidden;
+}
+
+.inside-content { max-width: 90%; width: 100%; }
+
+.inside-message {
+    margin: 0;
+    line-height: 1.55;
+    white-space: pre-wrap;
+    color: #1a1a1a;
+}
+
+.inside-placeholder { margin: 0; color: #999; font-style: italic; }
+
+.font-classic .inside-message { font-family: Georgia, 'Times New Roman', serif; }
+.font-modern .inside-message { font-family: Inter, -apple-system, sans-serif; }
+.font-handwritten .inside-message { font-family: 'Caveat', cursive; }
+.font-elegant .inside-message { font-family: 'Playfair Display', Georgia, serif; }
+.font-typewriter .inside-message { font-family: 'Courier New', Courier, monospace; }
+
+.size-small .inside-message { font-size: 14px; }
+.size-medium .inside-message { font-size: 20px; }
+.size-large .inside-message { font-size: 28px; }
+.size-xlarge .inside-message { font-size: 36px; }
+
+.card-page-back {
+    flex: 1;
+    position: relative;
+    background: var(--inside-bg);
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+}
+
+.back-logo {
+    position: absolute;
+    bottom: 14px;
+    right: 14px;
+    opacity: 0.9;
+}
+
+.sg-logo { height: 22px; width: auto; display: block; }
+
+.stats-card-page[data-platform="imessage"] .stat-tile.highlight { background: #e8f2ff; }
+.stats-card-page[data-platform="messenger"] .stat-tile.highlight { background: #e7f3ff; }
+.stats-card-page[data-platform="messenger"] .bar-fill,
+.stats-card-page[data-platform="messenger"] .trend-fill { background: #0084ff; }
+.stats-card-page[data-platform="imessage"] .bar-fill,
+.stats-card-page[data-platform="imessage"] .trend-fill { background: #007aff; }

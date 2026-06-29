@@ -1,0 +1,77 @@
+{# Dense bubble messages for hero phone mockups #}
+{% from "macros/preview_ui.html" import mini_chat_header %}
+
+{% set wa_messages = [
+    ('sent', 'love you x'), ('received', 'love parks!'), ('sent', 'love dinners'),
+    ('received', 'love stars'), ('sent', 'love mornings'), ('received', 'love you too'),
+    ('sent', 'love St Georges'), ('received', 'love thunderstorms'), ('sent', 'love lazy Sundays'),
+    ('received', 'love your voice'), ('sent', 'love cooking'), ('received', 'love travelling'),
+    ('sent', 'love coffee'), ('received', 'love the view'), ('sent', 'love beach walks'),
+    ('received', 'love jazz bars'), ('sent', 'love film nights'), ('received', 'love adventures'),
+    ('sent', 'love you loads'), ('received', 'love cosy flats'), ('sent', 'love food markets'),
+    ('received', 'love sunrises'), ('sent', 'love bookshops'), ('received', 'love date nights'),
+] %}
+{% set im_messages = [
+    ('sent', 'love you!'), ('received', 'love hikes'), ('sent', 'love pasta'),
+    ('received', 'love you x'), ('sent', 'love rain'), ('received', 'love museums'),
+    ('sent', 'love brunches'), ('received', 'love your laugh'), ('sent', 'love road trips'),
+    ('received', 'love candles'), ('sent', 'love you so much'), ('received', 'love gardens'),
+    ('sent', 'love vinyl'), ('received', 'love stargazing'), ('sent', 'love baking'),
+    ('received', 'love you xx'), ('sent', 'love train rides'), ('received', 'love picnics'),
+    ('sent', 'love art'), ('received', 'love thunderstorms'), ('sent', 'love you always'),
+    ('received', 'love wine bars'), ('sent', 'love swimming'), ('received', 'love you xxx'),
+] %}
+{% set ms_messages = [
+    ('sent', 'love you'), ('received', 'love cats'), ('sent', 'love pizza'),
+    ('received', 'love you!'), ('sent', 'love gaming'), ('received', 'love concerts'),
+    ('sent', 'love you loads'), ('received', 'love camping'), ('sent', 'love tacos'),
+    ('received', 'love your smile'), ('sent', 'love cycling'), ('received', 'love you x'),
+    ('sent', 'love podcasts'), ('received', 'love sunsets'), ('sent', 'love you xx'),
+    ('received', 'love thrift shops'), ('sent', 'love karaoke'), ('received', 'love you so much'),
+    ('sent', 'love hot chocolate'), ('received', 'love road trips'), ('sent', 'love you always'),
+    ('received', 'love farmers markets'), ('sent', 'love dancing'), ('received', 'love you xxx'),
+] %}
+
+<div class="hero-showcase">
+    <div class="hero-phone hero-phone--whatsapp" data-platform="whatsapp">
+        <span class="hero-phone-label">WhatsApp</span>
+        <div class="phone-mockup phone-mockup--sm">
+            <div class="phone-screen phone-screen--wa">
+                {{ mini_chat_header('whatsapp', 'Jamie') }}
+                <div class="mock-collage mock-collage--dense">
+                    {% for side, text in wa_messages %}
+                    <span class="mock-mini {{ side }}">{{ text }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="hero-phone hero-phone--imessage hero-phone--lift" data-platform="imessage">
+        <span class="hero-phone-label">iMessage</span>
+        <div class="phone-mockup phone-mockup--sm">
+            <div class="phone-screen phone-screen--im">
+                {{ mini_chat_header('imessage', 'Sam') }}
+                <div class="mock-collage mock-collage--dense">
+                    {% for side, text in im_messages %}
+                    <span class="mock-mini {{ side }}">{{ text }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="hero-phone hero-phone--messenger" data-platform="messenger">
+        <span class="hero-phone-label">Messenger</span>
+        <div class="phone-mockup phone-mockup--sm">
+            <div class="phone-screen phone-screen--ms">
+                {{ mini_chat_header('messenger', 'Alex') }}
+                <div class="mock-collage mock-collage--dense">
+                    {% for side, text in ms_messages %}
+                    <span class="mock-mini {{ side }}">{{ text }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

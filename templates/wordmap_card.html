@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% from "macros/chat_header.html" import chat_header, card_back_logo, card_inside %}
+{% from "macros/carousel.html" import carousel_controls, inside_editor_panel %}
+{% from "macros/preview_ui.html" import card_3d_wrapper %}
+
+{% block title %}Your Word Map — SocialGreetings{% endblock %}
+
+{% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Playfair+Display:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/card.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/themes.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/wordmap_card.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/presenter.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/print.css') }}">
+{% endblock %}
+
+{% block content %}
+<section class="card-viewer">
+    <div class="card-toolbar no-print">
+        <div class="card-stats">
+            <strong>{{ "{:,}".format(card.unique_words) }}</strong> unique words
+            · {{ card.platform|default('whatsapp')|title }}
+            · {{ card.orientation|default('portrait')|title }}
+        </div>
+        <div class="card-actions">
+            <a href="{{ url_for('create_wordmap') }}" class="btn btn-ghost btn-sm">New word map</a>
+            <button onclick="window.print()" class="btn btn-ghost btn-sm">Download PDF</button>
+            <a href="{{ url_for('order_card', card_id=card.card_id) }}" class="btn btn-primary btn-sm">Order now</a>
+        </div>
+    </div>
+
+    <div class="presenter-layout">
+        <div class="presenter-main">
+            <div class="presenter-stage">
+                <div class="carousel-viewport" id="carousel-viewport">
+                    <div class="carousel-track" id="carousel-track">
+                        <div class="carousel-slide" data-slide-type="wordmap">
+                            {% call card_3d_wrapper() %}
+                            <div class="wordmap-card-page card-page orientation-{{ card.orientation|default('portrait') }}"
+                                 data-platform="{{ card.platform|default('whatsapp') }}">
+                                {{ chat_header(card.platform|default('whatsapp'), card.contact_name, 'word map') }}
+                                {% include "partials/wordmap_content.html" %}
+                            </div>
+                            {% endcall %}
+                        </div>
+
+                        <div class="carousel-slide" data-slide-type="inside">
+                            {% call card_3d_wrapper() %}
+                            <div class="card-page orientation-{{ card.orientation|default('portrait') }}"
+                                 data-platform="{{ card.platform|default('whatsapp') }}">
+                                {{ card_inside(card.inside_message|default(''), card.inside_font|default('classic'), card.inside_font_size|default('medium')) }}
+                            </div>
+                            {% endcall %}
+                        </div>
+
+                        <div class="carousel-slide" data-slide-type="back">
+                            {% call card_3d_wrapper() %}
+                            <div class="card-page orientation-{{ card.orientation|default('portrait') }}"
+                                 data-platform="{{ card.platform|default('whatsapp') }}">
+                                {{ card_back_logo() }}
+                            </div>
+                            {% endcall %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{ carousel_controls() }}
+            {{ inside_editor_panel(
+                card.inside_message|default(''),
+                card.inside_font|default('classic'),
+                card.inside_font_size|default('medium'),
+                inside_fonts,
+                inside_font_sizes
+            ) }}
+        </div>
+    </div>
+</section>
+
+<script id="card-data" type="application/json">{{ card | tojson }}</script>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/wordmap_card.js') }}"></script>
+<script src="{{ url_for('static', filename='js/presenter.js') }}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const cardData = JSON.parse(document.getElementById('card-data').textContent);
+    window.dispatchEvent(new CustomEvent('card-render-complete', { detail: { showPage2: false } }));
+    new CardCarousel({ cardId: cardData.card_id });
+    if (new URLSearchParams(window.location.search).get('print') === '1') {
+        document.body.classList.toggle('print-landscape', cardData.orientation === 'landscape');
+        setTimeout(() => window.print(), 600);
+    }
+});
+</script>
+{% endblock %}

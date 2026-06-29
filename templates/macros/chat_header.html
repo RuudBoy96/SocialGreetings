@@ -1,0 +1,83 @@
+{# Platform-aware chat headers #}
+{% macro chat_header(platform, contact_name, subtitle='online') %}
+{% if platform == 'imessage' %}
+<header class="chat-header imessage-header">
+    <div class="chat-header-left">
+        <span class="header-back imessage-back" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        </span>
+        <div class="header-avatar imessage-avatar">
+            <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+        </div>
+        <div class="header-contact">
+            <span class="header-name">{{ contact_name }}</span>
+            <span class="header-status">{{ subtitle }}</span>
+        </div>
+    </div>
+    <div class="chat-header-right imessage-actions" aria-hidden="true">
+        <span class="header-icon-btn"><svg viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></span>
+    </div>
+</header>
+
+{% elif platform == 'messenger' %}
+<header class="chat-header messenger-header">
+    <div class="chat-header-left">
+        <span class="header-back messenger-back" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        </span>
+        <div class="header-avatar messenger-avatar">
+            <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+        </div>
+        <div class="header-contact">
+            <span class="header-name">{{ contact_name }}</span>
+            <span class="header-status messenger-active"><span class="active-dot"></span> Active now</span>
+        </div>
+    </div>
+    <div class="chat-header-right messenger-actions" aria-hidden="true">
+        <span class="header-icon-btn"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg></span>
+        <span class="header-icon-btn"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="12" cy="19" r="1.5" fill="currentColor" stroke="none"/></svg></span>
+    </div>
+</header>
+
+{% else %}
+<header class="chat-header whatsapp-header">
+    <div class="chat-header-left">
+        <span class="header-back" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        </span>
+        <div class="header-avatar">
+            <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+        </div>
+        <div class="header-contact">
+            <span class="header-name">{{ contact_name }}</span>
+            <span class="header-status">{{ subtitle }}</span>
+        </div>
+    </div>
+    <div class="chat-header-right" aria-hidden="true">
+        <span class="header-icon-btn"><svg viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></span>
+        <span class="header-icon-btn"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg></span>
+        <span class="header-icon-btn"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="12" cy="19" r="1.5" fill="currentColor" stroke="none"/></svg></span>
+    </div>
+</header>
+{% endif %}
+{% endmacro %}
+
+{% macro card_back_logo() %}
+<div class="card-page-back">
+    <div class="back-logo">
+        <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="SocialGreetings" class="sg-logo">
+    </div>
+</div>
+{% endmacro %}
+
+{% macro card_inside(inside_message, inside_font, inside_font_size) %}
+<div class="card-page-inside">
+    <div class="inside-content font-{{ inside_font }} size-{{ inside_font_size }}">
+        {% if inside_message %}
+        <p class="inside-message">{{ inside_message }}</p>
+        {% else %}
+        <p class="inside-placeholder">Your personal message will appear here</p>
+        {% endif %}
+    </div>
+</div>
+{% endmacro %}

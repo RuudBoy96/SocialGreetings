@@ -1,0 +1,305 @@
+/* Card viewer — isolated from site dark theme */
+
+.card-viewer {
+
+    padding: 2rem;
+
+    max-width: 1100px;
+
+    margin: 0 auto;
+
+}
+
+
+
+.card-toolbar {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 1.5rem;
+
+    flex-wrap: wrap;
+
+    gap: 1rem;
+
+}
+
+
+
+.card-toolbar .card-stats {
+
+    color: #9ca3af;
+
+    font-size: 0.9rem;
+
+}
+
+
+
+.card-toolbar .card-stats strong {
+
+    color: #f4f4f6;
+
+}
+
+
+
+.card-actions {
+
+    display: flex;
+
+    gap: 0.75rem;
+
+}
+
+
+
+.card-page {
+
+    background-size: 400px 400px;
+
+    position: relative;
+
+    border: 1px dashed #bbb;
+
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+
+    display: flex;
+
+    flex-direction: column;
+
+    overflow: hidden;
+
+}
+
+
+
+/* Dense collage chat body */
+
+.chat-body {
+
+    flex: 1;
+
+    padding: 4px 5px;
+
+    display: flex;
+
+    flex-direction: row;
+
+    flex-wrap: wrap;
+
+    justify-content: flex-start;
+
+    align-content: flex-start;
+
+    align-items: flex-start;
+
+    gap: 2px;
+
+    box-sizing: border-box;
+
+    overflow: hidden;
+
+}
+
+
+
+/* Dense collage — no bubble tails (prevents edge clipping) */
+.collage-body {
+    padding: 5px 7px 7px 7px;
+}
+
+.collage-body .message::before {
+    display: none;
+}
+
+.collage-body .message.sent {
+    border-top-right-radius: var(--bubble-radius);
+}
+
+.collage-body .message.received {
+    border-top-left-radius: var(--bubble-radius);
+}
+
+.message {
+
+    display: inline-block;
+
+    width: auto;
+
+    max-width: none;
+
+    padding: 3px 6px 4px 8px;
+
+    line-height: 1.15;
+
+    box-shadow: 0 1px 0.5px rgba(11, 20, 26, 0.13);
+
+    word-break: break-word;
+
+    flex: 0 0 auto;
+
+    font-size: 1em;
+
+    position: relative;
+
+}
+
+
+
+.message-text { display: inline; }
+
+
+
+.message .timestamp {
+
+    font-size: 0.52em;
+
+    margin-left: 5px;
+
+    white-space: nowrap;
+
+    vertical-align: bottom;
+
+    display: inline-block;
+
+    line-height: 1;
+
+    position: relative;
+
+    top: 2px;
+
+}
+
+
+
+.message.sent { border-top-right-radius: 0; }
+
+.message.received { border-top-left-radius: 0; }
+
+
+
+.message.sent::before {
+
+    content: '';
+
+    position: absolute;
+
+    top: 0;
+
+    right: -8px;
+
+    width: 8px;
+
+    height: 13px;
+
+    background: radial-gradient(circle at 100% 50%, transparent 8px, var(--chat-sent) 0);
+
+}
+
+
+
+.message.received::before {
+
+    content: '';
+
+    position: absolute;
+
+    top: 0;
+
+    left: -8px;
+
+    width: 8px;
+
+    height: 13px;
+
+    background: radial-gradient(circle at 0 50%, transparent 8px, var(--chat-received) 0);
+
+}
+
+
+
+@media print {
+
+    body { background: white !important; }
+
+
+
+    .navbar, .footer, .no-print, .flash-container {
+
+        display: none !important;
+
+    }
+
+
+
+    .card-viewer { padding: 0; max-width: none; }
+
+
+
+    .card-page {
+
+        box-shadow: none;
+
+        border: none;
+
+    }
+
+
+
+    .card-page, .message, .message-text, .inside-message {
+
+        color: #111b21 !important;
+
+        -webkit-print-color-adjust: exact !important;
+
+        print-color-adjust: exact !important;
+
+    }
+
+
+
+    * {
+
+        -webkit-print-color-adjust: exact !important;
+
+        print-color-adjust: exact !important;
+
+    }
+
+}
+
+
+
+@media screen and (max-width: 600px) {
+
+    .card-page.orientation-portrait {
+
+        width: 100%;
+
+        max-width: 5in;
+
+        height: auto;
+
+        min-height: 7in;
+
+    }
+
+    .card-page.orientation-landscape {
+
+        width: 100%;
+
+        max-width: 7in;
+
+        height: auto;
+
+        min-height: 5in;
+
+    }
+
+}
+

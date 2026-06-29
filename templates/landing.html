@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+
+
+
+{% block title %}SocialGreetings — Turn chats into cards{% endblock %}
+
+
+
+{% block content %}
+
+<section class="hero">
+
+    <div class="hero-bg"></div>
+
+    <div class="hero-content">
+
+        <div class="hero-badge">From your chats to wonderful</div>
+
+        <h1>Your chats.<br><span class="gradient-text">Beautifully printed.</span></h1>
+
+        <p class="hero-sub">
+
+            Upload your WhatsApp, iMessage, or Messenger history and turn it into a personalised greeting card —
+
+            packed with love messages, illustrated with stats, or mapped as your shared vocabulary.
+
+        </p>
+
+        <div class="hero-actions">
+
+            <a href="{{ url_for('create_hub') }}" class="btn btn-primary btn-lg">Create a card</a>
+
+            <a href="{{ url_for('create_love') }}" class="btn btn-ghost btn-lg">Love messages</a>
+
+            <a href="{{ url_for('create_stats') }}" class="btn btn-ghost btn-lg">Stats card</a>
+
+            <a href="{{ url_for('create_wordmap') }}" class="btn btn-ghost btn-lg">Word map</a>
+
+        </div>
+
+        <div class="social-proof">
+
+            <div class="avatar-stack">
+
+                <span class="mini-avatar" style="background:#ff6b6b">K</span>
+
+                <span class="mini-avatar" style="background:#4ecdc4">C</span>
+
+                <span class="mini-avatar" style="background:#a78bfa">A</span>
+
+            </div>
+
+            <span>Made for real conversations between real people</span>
+
+        </div>
+
+    </div>
+
+    <div class="hero-preview">
+
+        {% include "partials/hero_phones.html" %}
+
+    </div>
+
+</section>
+
+
+
+<section class="products">
+
+    <h2>Choose your card</h2>
+
+    <div class="product-cards">
+
+        <a href="{{ url_for('create_love') }}" class="product-card">
+
+            <div class="product-icon">💚</div>
+
+            <h3>Love Messages Card</h3>
+
+            <p>A dense collage of every message about things you love and moments you share — packed onto a themed chat card.</p>
+
+            <span class="product-cta">Create love card →</span>
+
+        </a>
+
+        <a href="{{ url_for('create_stats') }}" class="product-card product-card-alt">
+
+            <div class="product-icon">📊</div>
+
+            <h3>Chat Stats Card</h3>
+
+            <p>Beautiful infographics of your chat — how often you say love you, peak hours, trends over time, and more.</p>
+
+            <span class="product-cta">Create stats card →</span>
+
+        </a>
+
+        <a href="{{ url_for('create_wordmap') }}" class="product-card product-card-wordmap">
+
+            <div class="product-icon">☁️</div>
+
+            <h3>Word Map Card</h3>
+
+            <p>A constellation of the words you both use most — your shared language, visualised as a modern word cloud.</p>
+
+            <span class="product-cta">Create word map →</span>
+
+        </a>
+
+    </div>
+
+</section>
+
+
+
+<section class="features">
+
+    <div class="feature-card">
+
+        <div class="feature-icon">📱</div>
+
+        <h3>Upload your chat</h3>
+
+        <p>Export from WhatsApp, iMessage, or Messenger — drop the .txt file, no account linking needed.</p>
+
+    </div>
+
+    <div class="feature-card">
+
+        <div class="feature-icon">🎨</div>
+
+        <h3>Three platform themes</h3>
+
+        <p>WhatsApp, iMessage, and Messenger — each with authentic colours, bubbles, and headers.</p>
+
+    </div>
+
+    <div class="feature-card">
+
+        <div class="feature-icon">🎴</div>
+
+        <h3>Three card types</h3>
+
+        <p>Love collages, stat infographics, or word maps — pick what tells your story best.</p>
+
+    </div>
+
+</section>
+
+
+
+<section id="how-it-works" class="how-it-works">
+
+    <h2>How it works</h2>
+
+    <div class="steps">
+
+        <div class="step">
+
+            <span class="step-num">1</span>
+
+            <h4>Export your chat</h4>
+
+            <p>Export from your messaging app as a .txt file (without media).</p>
+
+        </div>
+
+        <div class="step">
+
+            <span class="step-num">2</span>
+
+            <h4>Pick your card type</h4>
+
+            <p>Choose love messages, stats, or word map — upload the file and personalise who it's for.</p>
+
+        </div>
+
+        <div class="step">
+
+            <span class="step-num">3</span>
+
+            <h4>Preview &amp; order</h4>
+
+            <p>Flip through your card pages, edit your inside message, then order a print.</p>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}
+
