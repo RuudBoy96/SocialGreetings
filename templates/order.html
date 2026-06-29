@@ -2,6 +2,8 @@
 
 {% block title %}Order your card — SocialGreetings{% endblock %}
 
+{% block extra_head %}<meta name="card-id" content="{{ card.card_id }}">{% endblock %}
+
 {% block extra_css %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/print.css') }}">
 <style>
@@ -260,9 +262,20 @@
         </div>
     </div>
 
+    <div class="privacy-note">
+        🔒 Your messages are 100% secure. Your chat file was deleted the moment this card was made,
+        this card is encrypted and auto-deletes after 30 minutes of inactivity, and you can remove it now.
+        <a href="{{ url_for('privacy') }}">Learn more</a>.
+        <button type="button" data-delete-card class="btn btn-ghost btn-sm">Delete my card now</button>
+    </div>
+
     <div class="order-footer-links">
         <a href="{{ url_for('landing') }}" class="btn btn-ghost btn-sm">Home</a>
         <a href="{{ url_for('create_hub') }}" class="btn btn-ghost btn-sm">Create new card</a>
     </div>
 </section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/card_session.js') }}"></script>
 {% endblock %}

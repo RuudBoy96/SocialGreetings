@@ -10,6 +10,8 @@
 
 {% block title %}Your card — SocialGreetings{% endblock %}
 
+{% block extra_head %}<meta name="card-id" content="{{ card.card_id }}">{% endblock %}
+
 
 
 {% block extra_css %}
@@ -48,7 +50,9 @@
 
             <a href="{{ url_for('create_hub') }}" class="btn btn-ghost btn-sm">New card</a>
 
-            <button onclick="window.print()" class="btn btn-ghost btn-sm">Download PDF</button>
+            <button type="button" onclick="window.print()" class="btn btn-ghost btn-sm">Download PDF</button>
+
+            <button type="button" data-delete-card class="btn btn-ghost btn-sm">Delete now</button>
 
             <a href="{{ url_for('order_card', card_id=card.card_id) }}" class="btn btn-primary btn-sm">Order now</a>
 
@@ -185,6 +189,8 @@
 <script src="{{ url_for('static', filename='js/card.js') }}"></script>
 
 <script src="{{ url_for('static', filename='js/presenter.js') }}"></script>
+
+<script src="{{ url_for('static', filename='js/card_session.js') }}"></script>
 
 <script>
 

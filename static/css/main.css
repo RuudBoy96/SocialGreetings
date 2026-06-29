@@ -1021,3 +1021,159 @@ a {
         --hero-scale: 0.72;
     }
 }
+
+/* ---- Privacy & trust ---- */
+.footer-links {
+    margin-top: 0.4rem;
+}
+
+.footer-links a {
+    color: var(--text-muted);
+    text-decoration: underline;
+}
+
+.upload-trust {
+    margin: 0.85rem auto 0;
+    max-width: 540px;
+    text-align: center;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+}
+
+.upload-trust a {
+    color: var(--primary-light);
+    text-decoration: underline;
+}
+
+.privacy-strip {
+    padding: 4rem 2rem;
+    background: radial-gradient(circle at 50% 0%, rgba(139, 92, 246, 0.12), transparent 70%);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.privacy-strip-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.privacy-strip h2 {
+    margin: 1rem 0 0.5rem;
+    font-size: 1.8rem;
+}
+
+.privacy-strip > .privacy-strip-inner > p {
+    color: var(--text-muted);
+    margin: 0 0 2rem;
+}
+
+.privacy-points {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.privacy-point {
+    background: var(--surface);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: var(--radius);
+    padding: 1.25rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.privacy-point span {
+    font-size: 1.6rem;
+}
+
+.privacy-point strong {
+    font-size: 0.95rem;
+}
+
+.privacy-point small {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    line-height: 1.4;
+}
+
+/* Order page privacy note */
+.privacy-note {
+    background: var(--surface);
+    border: 1px solid rgba(139, 92, 246, 0.25);
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    text-align: center;
+}
+
+.privacy-note a {
+    color: var(--primary-light);
+    text-decoration: underline;
+}
+
+.privacy-note [data-delete-card] {
+    display: inline-block;
+    margin-top: 0.6rem;
+}
+
+/* Privacy page */
+.legal-page {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 3rem 2rem 4rem;
+}
+
+.legal-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.legal-header h1 {
+    margin: 1rem 0 0.5rem;
+    font-size: 2.2rem;
+}
+
+.legal-header p {
+    color: var(--text-muted);
+    max-width: 620px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+.legal-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 2.5rem;
+}
+
+.legal-card {
+    background: var(--surface);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+}
+
+.legal-card h3 {
+    margin: 0 0 0.6rem;
+    font-size: 1.05rem;
+}
+
+.legal-card p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+.legal-footer {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}

@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
     {% block extra_css %}{% endblock %}
+    {% block extra_head %}{% endblock %}
 </head>
 <body>
     <nav class="navbar">
@@ -39,6 +40,7 @@
 
     <footer class="footer">
         <p>&copy; 2026 SocialGreetings — Turn your conversations into keepsakes.</p>
+        <p class="footer-links"><a href="{{ url_for('privacy') }}">Privacy &amp; security</a></p>
     </footer>
     {% block extra_js %}{% endblock %}
 </body>

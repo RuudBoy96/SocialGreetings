@@ -1,8 +1,12 @@
+import base64
+import hashlib
 import json
 import os
-import uuid
+import secrets
+import time
 from pathlib import Path
 
+from cryptography.fernet import Fernet, InvalidToken
 from flask import Flask, flash, jsonify, redirect, render_template, request, url_for
 from werkzeug.utils import secure_filename
 
@@ -28,26 +32,114 @@ UPLOAD_DIR = BASE_DIR / "uploads"
 GENERATED_DIR = BASE_DIR / "generated"
 ALLOWED_EXTENSIONS = {"txt"}
 
+# Cards are deleted automatically after this much inactivity. Activity is tracked
+# via the stored file's modification time, which is bumped on every view/edit/print
+# and by a lightweight heartbeat while a card page is open in the browser.
+RETENTION_SECONDS = 30 * 60
+RETENTION_MINUTES = RETENTION_SECONDS // 60
+
 UPLOAD_DIR.mkdir(exist_ok=True)
 GENERATED_DIR.mkdir(exist_ok=True)
+
+
+def _card_cipher() -> Fernet:
+    """Build a Fernet cipher from CARD_DATA_KEY (any string) so stored card data is
+    encrypted at rest. Falls back to the app secret for local development."""
+    passphrase = os.environ.get("CARD_DATA_KEY") or app.secret_key or "socialgreetings-dev-key"
+    key = base64.urlsafe_b64encode(hashlib.sha256(passphrase.encode("utf-8")).digest())
+    return Fernet(key)
+
+
+CARD_CIPHER = _card_cipher()
 
 
 def allowed_file(filename: str) -> bool:
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
+def _card_path(card_id: str) -> Path:
+    return GENERATED_DIR / f"{card_id}.json"
+
+
+def _is_expired(path: Path) -> bool:
+    try:
+        return (time.time() - path.stat().st_mtime) > RETENTION_SECONDS
+    except OSError:
+        return True
+
+
+def purge_expired_cards() -> None:
+    for path in GENERATED_DIR.glob("*.json"):
+        if _is_expired(path):
+            path.unlink(missing_ok=True)
+
+
+def card_exists_and_fresh(card_id: str) -> bool:
+    path = _card_path(card_id)
+    if not path.exists():
+        return False
+    if _is_expired(path):
+        path.unlink(missing_ok=True)
+        return False
+    return True
+
+
+def touch_card(card_id: str) -> None:
+    path = _card_path(card_id)
+    if path.exists():
+        path.touch()
+
+
+def delete_card_data(card_id: str) -> None:
+    _card_path(card_id).unlink(missing_ok=True)
+
+
 def load_card_data(card_id: str) -> dict | None:
-    path = GENERATED_DIR / f"{card_id}.json"
+    path = _card_path(card_id)
     if not path.exists():
         return None
-    with open(path, "r", encoding="utf-8") as f:
-        return json.load(f)
+    if _is_expired(path):
+        path.unlink(missing_ok=True)
+        return None
+    try:
+        token = path.read_bytes()
+        raw = CARD_CIPHER.decrypt(token)
+        return json.loads(raw.decode("utf-8"))
+    except (InvalidToken, ValueError, json.JSONDecodeError):
+        return None
 
 
 def save_card_data(card_id: str, data: dict) -> None:
-    path = GENERATED_DIR / f"{card_id}.json"
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False)
+    raw = json.dumps(data, ensure_ascii=False).encode("utf-8")
+    _card_path(card_id).write_bytes(CARD_CIPHER.encrypt(raw))
+
+
+# Remove anything already expired when the server boots.
+purge_expired_cards()
+
+
+@app.before_request
+def _sweep_expired_cards():
+    purge_expired_cards()
+
+
+@app.after_request
+def _set_security_headers(response):
+    response.headers.setdefault("X-Content-Type-Options", "nosniff")
+    response.headers.setdefault("X-Frame-Options", "DENY")
+    response.headers.setdefault("Referrer-Policy", "no-referrer")
+    response.headers.setdefault(
+        "Content-Security-Policy",
+        "default-src 'self'; "
+        "img-src 'self' data:; "
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+        "font-src 'self' https://fonts.gstatic.com; "
+        "script-src 'self' 'unsafe-inline'; "
+        "connect-src 'self'; "
+        "frame-ancestors 'none'; "
+        "base-uri 'self'",
+    )
+    return response
 
 
 def resolve_names(form, filename: str, participants: list[str], platform: str = "auto") -> tuple[str, str]:
@@ -101,7 +193,7 @@ def extract_card_settings(form) -> dict:
 
 def handle_upload(form, file) -> tuple[str, Path, str, str, str]:
     filename = secure_filename(file.filename)
-    card_id = str(uuid.uuid4())[:8]
+    card_id = secrets.token_urlsafe(16)
     upload_path = UPLOAD_DIR / f"{card_id}_{filename}"
     file.save(upload_path)
 
@@ -299,6 +391,7 @@ def view_card(card_id: str):
     if not card_data:
         flash("Card not found. Please create a new one.", "error")
         return redirect(url_for("create_hub"))
+    touch_card(card_id)
     card_type = card_data.get("card_type")
     if card_type == "stats":
         return redirect(url_for("view_stats_card", card_id=card_id))
@@ -318,6 +411,7 @@ def view_stats_card(card_id: str):
     if not card_data:
         flash("Stats card not found. Please create a new one.", "error")
         return redirect(url_for("create_stats"))
+    touch_card(card_id)
     if card_data.get("card_type") != "stats":
         return redirect(url_for("view_card", card_id=card_id))
     return render_template(
@@ -334,6 +428,7 @@ def view_wordmap_card(card_id: str):
     if not card_data:
         flash("Word map card not found. Please create a new one.", "error")
         return redirect(url_for("create_wordmap"))
+    touch_card(card_id)
     if card_data.get("card_type") != "wordmap":
         return redirect(url_for("view_card", card_id=card_id))
     return render_template(
@@ -350,6 +445,7 @@ def order_card(card_id: str):
     if not card_data:
         flash("Card not found.", "error")
         return redirect(url_for("landing"))
+    touch_card(card_id)
 
     orientation = card_data.get("orientation", "portrait")
     dims = ORIENTATIONS.get(orientation, ORIENTATIONS["portrait"])
@@ -388,6 +484,30 @@ def update_card(card_id: str):
 
     save_card_data(card_id, card_data)
     return jsonify({"ok": True})
+
+
+@app.route("/card/<card_id>/ping", methods=["POST"])
+def ping_card(card_id: str):
+    """Heartbeat from an open card page: keeps the card alive while it is being viewed."""
+    if not card_exists_and_fresh(card_id):
+        return jsonify({"ok": False}), 404
+    touch_card(card_id)
+    return jsonify({"ok": True})
+
+
+@app.route("/card/<card_id>/delete", methods=["POST"])
+def delete_card(card_id: str):
+    """Let a user delete their card and all its data on demand."""
+    delete_card_data(card_id)
+    if request.headers.get("X-Requested-With") or request.is_json:
+        return jsonify({"ok": True})
+    flash("Your card and all its data have been deleted.", "success")
+    return redirect(url_for("landing"))
+
+
+@app.route("/privacy")
+def privacy():
+    return render_template("privacy.html", retention_minutes=RETENTION_MINUTES)
 
 
 @app.route("/api/preview-participants", methods=["POST"])
