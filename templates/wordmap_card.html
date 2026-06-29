@@ -92,9 +92,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const cardData = JSON.parse(document.getElementById('card-data').textContent);
     window.dispatchEvent(new CustomEvent('card-render-complete', { detail: { showPage2: false } }));
     new CardCarousel({ cardId: cardData.card_id });
-    if (new URLSearchParams(window.location.search).get('print') === '1') {
+    const _params = new URLSearchParams(window.location.search);
+    if (_params.get('print') === '1' || _params.get('pdf') === '1') {
         document.body.classList.toggle('print-landscape', cardData.orientation === 'landscape');
-        setTimeout(() => window.print(), 600);
+        if (_params.get('print') === '1') setTimeout(() => window.print(), 600);
     }
 });
 </script>

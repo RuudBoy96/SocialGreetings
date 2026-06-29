@@ -202,11 +202,13 @@ function initCardCarousel() {
 
     window._cardCarousel = new CardCarousel({ cardId: cardData.card_id });
 
-    if (new URLSearchParams(window.location.search).get('print') === '1') {
+    const _params = new URLSearchParams(window.location.search);
+
+    if (_params.get('print') === '1' || _params.get('pdf') === '1') {
 
         document.body.classList.toggle('print-landscape', cardData.orientation === 'landscape');
 
-        setTimeout(() => window.print(), 800);
+        if (_params.get('print') === '1') setTimeout(() => window.print(), 800);
 
     }
 

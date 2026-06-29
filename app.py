@@ -6,8 +6,10 @@ import secrets
 import time
 from pathlib import Path
 
+from urllib.parse import urljoin
+
 from cryptography.fernet import Fernet, InvalidToken
-from flask import Flask, flash, jsonify, redirect, render_template, request, url_for
+from flask import Flask, Response, flash, jsonify, redirect, render_template, request, url_for
 from werkzeug.utils import secure_filename
 
 from extractor import process_chat
@@ -55,6 +57,52 @@ CARD_CIPHER = _card_cipher()
 
 def allowed_file(filename: str) -> bool:
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+def render_card_pdf(page_url: str, orientation: str) -> bytes:
+    """Render a card page to a print-ready PDF using headless Chromium so the output
+    matches the on-screen card exactly (themes, fonts, layout)."""
+    from playwright.sync_api import sync_playwright
+
+    width, height = ("7in", "5in") if orientation == "landscape" else ("5in", "7in")
+    with sync_playwright() as p:
+        browser = p.chromium.launch(args=["--no-sandbox"])
+        try:
+            page = browser.new_page()
+            page.goto(page_url, wait_until="networkidle")
+            # Give the carousel/chat layout JS a moment to finish sizing the pages.
+            page.wait_for_timeout(1200)
+            # Force the paper size for this orientation (the stylesheet's @page rule is
+            # fixed to portrait) and pin each card page to exactly one sheet so the 3D
+            # wrapper height never spills a card onto a second page.
+            page.add_style_tag(content=(
+                f"@page {{ size: {width} {height}; margin: 0; }}"
+                ".card-3d-shadow, .card-stack-peek { display: none !important; }"
+                # Flatten every ancestor: any transform/perspective/overflow on a parent
+                # creates a containing block that stops CSS page-break fragmentation.
+                ".card-viewer, .presenter-layout, .presenter-main, .presenter-stage,"
+                " .carousel-viewport, .carousel-track, .card-3d-scene, .card-3d-wrapper {"
+                " overflow: visible !important; transform: none !important;"
+                " perspective: none !important; height: auto !important; min-height: 0 !important;"
+                " display: block !important; padding: 0 !important; margin: 0 !important; }"
+                f".carousel-slide {{ display: block !important; height: calc({height} - 2px) !important;"
+                " min-height: 0 !important; overflow: hidden !important;"
+                " padding: 0 !important; margin: 0 !important;"
+                " page-break-after: always !important; break-after: page !important;"
+                " break-inside: avoid !important; page-break-inside: avoid !important; }"
+                ".carousel-slide:last-child { page-break-after: avoid !important;"
+                " break-after: avoid !important; }"
+                f".card-page {{ width: {width} !important; height: calc({height} - 2px) !important;"
+                " max-width: none !important; min-height: 0 !important;"
+                " box-sizing: border-box !important; overflow: hidden !important; }"
+            ))
+            return page.pdf(
+                print_background=True,
+                prefer_css_page_size=True,
+                margin={"top": "0", "bottom": "0", "left": "0", "right": "0"},
+            )
+        finally:
+            browser.close()
 
 
 def _card_path(card_id: str) -> Path:
@@ -466,6 +514,34 @@ def order_card(card_id: str):
     )
 
 
+@app.route("/card/<card_id>/pdf")
+def card_pdf(card_id: str):
+    card_data = load_card_data(card_id)
+    if not card_data:
+        flash("Card not found.", "error")
+        return redirect(url_for("landing"))
+    touch_card(card_id)
+
+    card_type = card_data.get("card_type")
+    endpoint = {"stats": "view_stats_card", "wordmap": "view_wordmap_card"}.get(card_type, "view_card")
+    page_url = urljoin(request.host_url, url_for(endpoint, card_id=card_id)) + "?pdf=1"
+    orientation = card_data.get("orientation", "portrait")
+
+    try:
+        pdf_bytes = render_card_pdf(page_url, orientation)
+    except Exception:
+        app.logger.exception("PDF generation failed for card %s", card_id)
+        flash("Sorry, we couldn't generate the print PDF just now. Please try again.", "error")
+        return redirect(url_for("order_card", card_id=card_id))
+
+    filename = f"socialgreetings-{card_type or 'love'}-card.pdf"
+    return Response(
+        pdf_bytes,
+        mimetype="application/pdf",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
+
+
 @app.route("/api/card/<card_id>/update", methods=["POST"])
 def update_card(card_id: str):
     card_data = load_card_data(card_id)
@@ -540,4 +616,4 @@ def preview_participants():
 
 if __name__ == "__main__":
     print("SocialGreetings running at http://localhost:5000")
-    app.run(debug=True, port=5000)
+    app.run(debug=True, port=5000, threaded=True)
