@@ -50,9 +50,10 @@
     flex-direction: column;
 }
 
-/* ---- Front cover (chat collage) ---- */
+/* ---- Front cover (chat collage) is the resting page underneath ---- */
 .cf-page--front {
-    animation: cfFront 12s ease-in-out infinite;
+    opacity: 1;
+    z-index: 1;
 }
 
 .cf-header {
@@ -119,6 +120,7 @@
     justify-content: center;
     text-align: center;
     padding: 14% 12%;
+    z-index: 2;
     animation: cfInside 12s ease-in-out infinite;
 }
 
@@ -143,6 +145,7 @@
     align-items: center;
     justify-content: center;
     gap: 4px;
+    z-index: 3;
     animation: cfBack 12s ease-in-out infinite;
 }
 
@@ -179,27 +182,20 @@
     50% { transform: translateY(-8px) rotateZ(1.2deg); }
 }
 
-@keyframes cfFront {
-    0% { opacity: 0; transform: rotateY(-24deg); }
-    4% { opacity: 1; transform: rotateY(0deg); }
-    29% { opacity: 1; transform: rotateY(0deg); }
-    34% { opacity: 0; transform: rotateY(24deg); }
-    100% { opacity: 0; }
-}
-
 @keyframes cfInside {
-    0%, 30% { opacity: 0; transform: rotateY(-24deg); }
-    37% { opacity: 1; transform: rotateY(0deg); }
-    62% { opacity: 1; transform: rotateY(0deg); }
-    67% { opacity: 0; transform: rotateY(24deg); }
+    0%, 24% { opacity: 0; transform: rotateY(-26deg); }
+    32% { opacity: 1; transform: rotateY(0deg); }
+    58% { opacity: 1; transform: rotateY(0deg); }
+    66% { opacity: 0; transform: rotateY(26deg); }
     100% { opacity: 0; }
 }
 
 @keyframes cfBack {
-    0%, 63% { opacity: 0; transform: rotateY(-24deg); }
-    70% { opacity: 1; transform: rotateY(0deg); }
-    95% { opacity: 1; transform: rotateY(0deg); }
-    100% { opacity: 0; transform: rotateY(24deg); }
+    0%, 58% { opacity: 0; transform: rotateY(-26deg); }
+    66% { opacity: 1; transform: rotateY(0deg); }
+    90% { opacity: 1; transform: rotateY(0deg); }
+    97% { opacity: 0; transform: rotateY(26deg); }
+    100% { opacity: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
