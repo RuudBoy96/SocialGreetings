@@ -2,7 +2,17 @@
 
 
 
-{% block title %}SocialGreetings — Turn chats into cards{% endblock %}
+{% block title %}SocialGreetings — Birthday &amp; anniversary cards from your chats{% endblock %}
+
+
+
+{% block extra_css %}
+
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Playfair+Display:ital@0;1&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/card_film.css') }}">
+
+{% endblock %}
 
 
 
@@ -14,15 +24,19 @@
 
     <div class="hero-content">
 
-        <div class="hero-badge">From your chats to wonderful</div>
+        <div class="hero-badge">🎂 Birthdays &amp; 💞 anniversaries, made personal</div>
 
-        <h1>Your chats.<br><span class="gradient-text">Beautifully printed.</span></h1>
+        <h1>Their birthday.<br><span class="gradient-text">Your story, printed.</span></h1>
 
         <p class="hero-sub">
 
-            Upload your WhatsApp, iMessage, or Messenger history and turn it into a personalised greeting card —
+            The most personal birthday or anniversary card for the people you love. Upload your
 
-            packed with love messages, illustrated with stats, or mapped as your shared vocabulary.
+            WhatsApp, iMessage, or Messenger history and we turn your real conversations into a
+
+            keepsake greeting card — packed with love messages, illustrated with stats, or mapped
+
+            as your shared vocabulary.
 
         </p>
 
@@ -50,7 +64,7 @@
 
             </div>
 
-            <span>Made for real conversations between real people</span>
+            <span>The keepsake card for birthdays &amp; anniversaries</span>
 
         </div>
 
@@ -58,7 +72,7 @@
 
     <div class="hero-preview">
 
-        {% include "partials/hero_phones.html" %}
+        {% include "partials/card_film.html" %}
 
     </div>
 
@@ -170,9 +184,9 @@
 
             <span class="step-num">2</span>
 
-            <h4>Pick your card type</h4>
+            <h4>Pick the occasion &amp; card</h4>
 
-            <p>Choose love messages, stats, or word map — upload the file and personalise who it's for.</p>
+            <p>Choose birthday or anniversary, pick love messages, stats, or word map, and personalise who it's for.</p>
 
         </div>
 
@@ -180,11 +194,41 @@
 
             <span class="step-num">3</span>
 
-            <h4>Preview &amp; order</h4>
+            <h4>Preview &amp; order a print</h4>
 
-            <p>Flip through your card pages, edit your inside message, then order a print.</p>
+            <p>Flip through your card pages, edit your inside message, download a print-ready PDF, then order.</p>
 
         </div>
+
+    </div>
+
+</section>
+
+
+
+<section class="privacy-strip">
+
+    <div class="privacy-strip-inner">
+
+        <div class="hero-badge">🔒 Your messages are 100% secure</div>
+
+        <h2>Private by design — your messages can never be stolen</h2>
+
+        <p>Your conversations are yours alone. We made sure they stay that way.</p>
+
+        <div class="privacy-points">
+
+            <div class="privacy-point"><span>🗑️</span><strong>Deleted instantly</strong><small>Your chat file is wiped the moment your card is made.</small></div>
+
+            <div class="privacy-point"><span>⏱️</span><strong>Auto-deletes in 30 min</strong><small>Cards vanish after 30 minutes of inactivity — or delete yours anytime.</small></div>
+
+            <div class="privacy-point"><span>🔐</span><strong>Encrypted &amp; private</strong><small>Encrypted at rest, behind an unguessable link. No account needed.</small></div>
+
+            <div class="privacy-point"><span>🚫</span><strong>Never sold or shared</strong><small>No ads, no trackers, never shared with anyone.</small></div>
+
+        </div>
+
+        <a href="{{ url_for('privacy') }}" class="btn btn-ghost">How we keep you safe</a>
 
     </div>
 

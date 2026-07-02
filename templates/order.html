@@ -2,6 +2,8 @@
 
 {% block title %}Order your card — SocialGreetings{% endblock %}
 
+{% block extra_head %}<meta name="card-id" content="{{ card.card_id }}">{% endblock %}
+
 {% block extra_css %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/print.css') }}">
 <style>
@@ -163,6 +165,10 @@
                 <span>{% if card.card_type == 'stats' %}Stats card{% elif card.card_type == 'wordmap' %}Word map card{% else %}Love messages card{% endif %}</span>
             </div>
             <div class="summary-item">
+                <label>Occasion</label>
+                <span>{{ card.occasion|default('birthday')|title }}</span>
+            </div>
+            <div class="summary-item">
                 <label>Platform theme</label>
                 <span>{{ card.platform|default('whatsapp')|title }}</span>
             </div>
@@ -204,14 +210,12 @@
     </div>
 
     <div class="order-actions order-page-actions">
+        <a href="{{ url_for('card_pdf', card_id=card.card_id) }}" class="btn btn-primary btn-lg btn-full">Download print-ready PDF</a>
         {% if card.card_type == 'stats' %}
-        <a href="{{ url_for('view_stats_card', card_id=card.card_id) }}?print=1" target="_blank" class="btn btn-primary btn-lg btn-full">Download print PDF</a>
         <a href="{{ url_for('view_stats_card', card_id=card.card_id) }}" class="btn btn-ghost btn-full">Back to preview</a>
         {% elif card.card_type == 'wordmap' %}
-        <a href="{{ url_for('view_wordmap_card', card_id=card.card_id) }}?print=1" target="_blank" class="btn btn-primary btn-lg btn-full">Download print PDF</a>
         <a href="{{ url_for('view_wordmap_card', card_id=card.card_id) }}" class="btn btn-ghost btn-full">Back to preview</a>
         {% else %}
-        <a href="{{ url_for('view_card', card_id=card.card_id) }}?print=1" target="_blank" class="btn btn-primary btn-lg btn-full">Download print PDF</a>
         <a href="{{ url_for('view_card', card_id=card.card_id) }}" class="btn btn-ghost btn-full">Back to preview</a>
         {% endif %}
     </div>
@@ -227,22 +231,24 @@
     </div>
 
     <div class="print-partners">
-        <h3>Send to a print service</h3>
-        <p style="margin:0 0 0.5rem;font-size:0.85rem;color:var(--text-muted);">
-            Download your PDF above, then upload it to one of these services:
+        <h3>Send it to print — seamlessly</h3>
+        <p style="margin:0 0 0.75rem;font-size:0.85rem;color:var(--text-muted);">
+            Your PDF is print-ready at the exact card size. Send it to our recommended partner to
+            print &amp; deliver the full folded card:
         </p>
+        <a href="https://www.prodigi.com/products/cards/greeting-cards/" target="_blank" rel="noopener" class="partner-link partner-link--primary">
+            <div>
+                <strong>Prodigi — recommended</strong><br>
+                <span>Global print &amp; delivery for folded greeting cards</span>
+            </div>
+            <span>Print my card →</span>
+        </a>
+        <p style="margin:1rem 0 0.4rem;font-size:0.78rem;color:var(--text-muted);">Prefer another service? These also accept your PDF:</p>
         <div class="partner-links">
             <a href="https://www.printed.com/" target="_blank" rel="noopener" class="partner-link">
                 <div>
                     <strong>Printed.com</strong><br>
                     <span>UK — upload PDF, greeting cards</span>
-                </div>
-                <span>→</span>
-            </a>
-            <a href="https://www.prodigi.com/" target="_blank" rel="noopener" class="partner-link">
-                <div>
-                    <strong>Prodigi</strong><br>
-                    <span>Global print API &amp; manual orders</span>
                 </div>
                 <span>→</span>
             </a>
@@ -256,9 +262,20 @@
         </div>
     </div>
 
+    <div class="privacy-note">
+        🔒 Your messages are 100% secure. Your chat file was deleted the moment this card was made,
+        this card is encrypted and auto-deletes after 30 minutes of inactivity, and you can remove it now.
+        <a href="{{ url_for('privacy') }}">Learn more</a>.
+        <button type="button" data-delete-card class="btn btn-ghost btn-sm">Delete my card now</button>
+    </div>
+
     <div class="order-footer-links">
         <a href="{{ url_for('landing') }}" class="btn btn-ghost btn-sm">Home</a>
         <a href="{{ url_for('create_hub') }}" class="btn btn-ghost btn-sm">Create new card</a>
     </div>
 </section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/card_session.js') }}"></script>
 {% endblock %}

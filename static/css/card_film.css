@@ -1,0 +1,206 @@
+.card-film {
+    position: relative;
+    width: 100%;
+    max-width: 540px;
+    margin: 0 auto;
+    aspect-ratio: 4 / 3;
+    border-radius: 20px;
+    overflow: hidden;
+    background-image: url('../img/card_film_backdrop.png');
+    background-size: cover;
+    background-position: center;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+}
+
+.card-film::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 45%, transparent 40%, rgba(0, 0, 0, 0.28));
+    pointer-events: none;
+}
+
+.card-film-stage {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    perspective: 1400px;
+}
+
+.card-film-card {
+    position: relative;
+    width: 46%;
+    aspect-ratio: 5 / 7;
+    transform-style: preserve-3d;
+    animation: cfFloat 6s ease-in-out infinite;
+}
+
+.cf-page {
+    position: absolute;
+    inset: 0;
+    border-radius: 10px;
+    background: #ece5dd;
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    transform-origin: left center;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ---- Front cover (chat collage) is the resting page underneath ---- */
+.cf-page--front {
+    opacity: 1;
+    z-index: 1;
+}
+
+.cf-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 8px;
+    background: #075e54;
+    color: #fff;
+}
+
+.cf-avatar {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #25d366;
+    flex: none;
+}
+
+.cf-contact {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.05;
+}
+
+.cf-contact strong { font-size: 8px; }
+.cf-contact small { font-size: 6px; opacity: 0.8; }
+
+.cf-collage {
+    flex: 1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px;
+    align-content: flex-start;
+    padding: 6px 5px;
+    background: #d9d2c8;
+}
+
+.cf-bubble {
+    font-size: 6.5px;
+    line-height: 1.25;
+    padding: 2px 5px;
+    border-radius: 7px;
+    max-width: 70%;
+    color: #111;
+}
+
+.cf-bubble.in { background: #fff; align-self: flex-start; }
+.cf-bubble.out { background: #dcf8c6; margin-left: auto; }
+
+.cf-caption {
+    padding: 5px;
+    text-align: center;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 7.5px;
+    color: #5b4636;
+    background: #f3efe9;
+}
+
+/* ---- Inside message ---- */
+.cf-page--inside {
+    background: #fbf7f2;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 14% 12%;
+    z-index: 2;
+    animation: cfInside 12s ease-in-out infinite;
+}
+
+.cf-inside-text {
+    margin: 0;
+    font-family: 'Caveat', cursive;
+    font-size: 13px;
+    color: #4a3b30;
+    line-height: 1.35;
+}
+
+.cf-inside-sign {
+    margin-top: 8px;
+    font-family: 'Caveat', cursive;
+    font-size: 10px;
+    color: #9a7b62;
+}
+
+/* ---- Back cover ---- */
+.cf-page--back {
+    background: linear-gradient(160deg, #1a1a22, #2a2336);
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    z-index: 3;
+    animation: cfBack 12s ease-in-out infinite;
+}
+
+.cf-logo {
+    font-size: 9px;
+    font-weight: 800;
+    color: #fff;
+}
+
+.cf-back-sub {
+    font-size: 6px;
+    color: #b9a9d6;
+    letter-spacing: 0.04em;
+}
+
+.card-film-badge {
+    position: absolute;
+    left: 50%;
+    bottom: 14px;
+    transform: translateX(-50%);
+    background: rgba(15, 15, 18, 0.7);
+    backdrop-filter: blur(6px);
+    color: #fff;
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 0.35rem 0.85rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    white-space: nowrap;
+}
+
+@keyframes cfFloat {
+    0%, 100% { transform: translateY(0) rotateZ(-1.2deg); }
+    50% { transform: translateY(-8px) rotateZ(1.2deg); }
+}
+
+@keyframes cfInside {
+    0%, 24% { opacity: 0; transform: rotateY(-26deg); }
+    32% { opacity: 1; transform: rotateY(0deg); }
+    58% { opacity: 1; transform: rotateY(0deg); }
+    66% { opacity: 0; transform: rotateY(26deg); }
+    100% { opacity: 0; }
+}
+
+@keyframes cfBack {
+    0%, 58% { opacity: 0; transform: rotateY(-26deg); }
+    66% { opacity: 1; transform: rotateY(0deg); }
+    90% { opacity: 1; transform: rotateY(0deg); }
+    97% { opacity: 0; transform: rotateY(26deg); }
+    100% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .card-film-card { animation: none; }
+    .cf-page--front { animation: none; opacity: 1; transform: none; }
+    .cf-page--inside,
+    .cf-page--back { animation: none; opacity: 0; }
+}

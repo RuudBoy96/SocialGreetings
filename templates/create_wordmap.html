@@ -1,95 +1,113 @@
-{% extends "base.html" %}
-
-{% block title %}Create Word Map Card — SocialGreetings{% endblock %}
-
-{% block content %}
-<section class="create-page create-page-wide">
-    <div class="create-header">
-        <div class="card-type-badge wordmap-badge">☁️ Word Map</div>
-        <h1>Your shared language</h1>
-        <p>Upload your full chat history and we'll map the words you both use most — a constellation of your relationship's vocabulary.</p>
-    </div>
-
-    <form class="create-form" action="{{ url_for('create_wordmap') }}" method="post" enctype="multipart/form-data" id="create-form">
-        <div class="upload-zone" id="upload-zone">
-            <input type="file" name="chat_file" id="chat_file" accept=".txt" required>
-            <div class="upload-icon">📄</div>
-            <p class="upload-title">Drop your chat export here</p>
-            <p class="upload-hint">We analyse every message — not just love notes</p>
-            <p class="upload-filename" id="upload-filename"></p>
-        </div>
-
-        <div class="form-section" id="options-section" hidden>
-            <h3>Platform &amp; layout</h3>
-
-            <label for="platform">Messaging platform</label>
-            <select name="platform" id="platform">
-                <option value="auto">Auto-detect</option>
-                {% for key, p in platforms.items() %}
-                <option value="{{ p.id }}">{{ p.icon }} {{ p.name }}</option>
-                {% endfor %}
-            </select>
-            <p class="field-hint" id="platform-hint">We'll detect the format from your file.</p>
-
-            <label for="orientation">Card orientation</label>
-            <select name="orientation" id="orientation">
-                {% for key, o in orientations.items() %}
-                <option value="{{ o.id }}">{{ o.label }} ({{ o.width }} × {{ o.height }})</option>
-                {% endfor %}
-            </select>
-
-            <h3 class="section-divider">Personalise</h3>
-
-            <label for="card_for">Who is this card for?</label>
-            <select name="card_for" id="card_for">
-                <option value="">Auto-detect from chat</option>
-            </select>
-
-            <label for="contact_name">Contact name (chat header)</label>
-            <input type="text" name="contact_name" id="contact_name" placeholder="e.g. Kim Butler">
-
-            <h3 class="section-divider">Inside message</h3>
-
-            <label for="inside_message">Your personal message (inside of card)</label>
-            <textarea name="inside_message" id="inside_message" rows="3" placeholder="Write something from the heart…"></textarea>
-
-            <div class="form-row">
-                <div>
-                    <label for="inside_font">Font style</label>
-                    <select name="inside_font" id="inside_font">
-                        {% for key, f in inside_fonts.items() %}
-                        <option value="{{ f.id }}">{{ f.label }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div>
-                    <label for="inside_font_size">Font size</label>
-                    <select name="inside_font_size" id="inside_font_size">
-                        {% for key, s in inside_font_sizes.items() %}
-                        <option value="{{ s.id }}" {% if s.id == 'medium' %}selected{% endif %}>{{ s.label }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
-        </div>
-
-        <button type="submit" class="btn btn-primary btn-lg btn-full" id="submit-btn" disabled>
-            Generate word map card
-        </button>
-    </form>
-
-    <aside class="create-tips">
-        <h4>What you'll get</h4>
-        <ol>
-            <li>A hero word cloud of vocabulary you <em>both</em> use</li>
-            <li>Word frequency tiers sized by how often you say them</li>
-            <li>Personal "fingerprints" — words only you or they use</li>
-            <li>Full chat analysis: thousands of messages distilled</li>
-        </ol>
-    </aside>
-</section>
-{% endblock %}
-
-{% block extra_js %}
-<script src="{{ url_for('static', filename='js/create.js') }}"></script>
-{% endblock %}
+{% extends "base.html" %}
+
+{% block title %}Create Word Map Card — SocialGreetings{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/export_guide.css') }}">
+{% endblock %}
+
+{% block content %}
+<section class="create-page create-page-wide">
+    <div class="create-header">
+        <div class="card-type-badge wordmap-badge">☁️ Word Map</div>
+        <h1>Your shared language</h1>
+        <p>Upload your full chat history and we'll map the words you both use most — a constellation of your relationship's vocabulary.</p>
+    </div>
+
+    <form class="create-form" action="{{ url_for('create_wordmap') }}" method="post" enctype="multipart/form-data" id="create-form">
+        <div class="upload-zone" id="upload-zone">
+            <input type="file" name="chat_file" id="chat_file" accept=".txt" required>
+            <div class="upload-icon">📄</div>
+            <p class="upload-title">Drop your chat export here</p>
+            <p class="upload-hint">We analyse every message — not just love notes</p>
+            <p class="upload-filename" id="upload-filename"></p>
+        </div>
+
+        <p class="upload-trust">🔒 Your messages are 100% secure — your file is deleted the instant your card is made. <a href="{{ url_for('privacy') }}">How we protect you</a></p>
+
+        <div class="form-section" id="options-section" hidden>
+            <h3>Occasion</h3>
+            <label for="occasion">What are you celebrating?</label>
+            <select name="occasion" id="occasion">
+                {% for key, o in occasions.items() %}
+                <option value="{{ o.id }}">{{ o.icon }} {{ o.label }}</option>
+                {% endfor %}
+            </select>
+            <p class="field-hint">We'll tailor the cover captions to the occasion.</p>
+
+            <h3 class="section-divider">Platform &amp; layout</h3>
+
+            <label for="platform">Messaging platform</label>
+            <select name="platform" id="platform">
+                <option value="auto">Auto-detect</option>
+                {% for key, p in platforms.items() %}
+                <option value="{{ p.id }}">{{ p.icon }} {{ p.name }}</option>
+                {% endfor %}
+            </select>
+            <p class="field-hint" id="platform-hint">We'll detect the format from your file.</p>
+
+            <label for="orientation">Card orientation</label>
+            <select name="orientation" id="orientation">
+                {% for key, o in orientations.items() %}
+                <option value="{{ o.id }}">{{ o.label }} ({{ o.width }} × {{ o.height }})</option>
+                {% endfor %}
+            </select>
+
+            <h3 class="section-divider">Personalise</h3>
+
+            <label for="card_for">Who is this card for?</label>
+            <select name="card_for" id="card_for">
+                <option value="">Auto-detect from chat</option>
+            </select>
+
+            <label for="contact_name">Contact name (chat header)</label>
+            <input type="text" name="contact_name" id="contact_name" placeholder="e.g. Kim Butler">
+
+            <h3 class="section-divider">Inside message</h3>
+
+            <label for="inside_message">Your personal message (inside of card)</label>
+            <textarea name="inside_message" id="inside_message" rows="3" placeholder="Write something from the heart…"></textarea>
+
+            <div class="form-row">
+                <div>
+                    <label for="inside_font">Font style</label>
+                    <select name="inside_font" id="inside_font">
+                        {% for key, f in inside_fonts.items() %}
+                        <option value="{{ f.id }}">{{ f.label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label for="inside_font_size">Font size</label>
+                    <select name="inside_font_size" id="inside_font_size">
+                        {% for key, s in inside_font_sizes.items() %}
+                        <option value="{{ s.id }}" {% if s.id == 'medium' %}selected{% endif %}>{{ s.label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg btn-full" id="submit-btn" disabled>
+            Generate word map card
+        </button>
+    </form>
+
+    <aside class="create-tips">
+        <h4>What you'll get</h4>
+        <ol>
+            <li>A hero word cloud of vocabulary you <em>both</em> use</li>
+            <li>Word frequency tiers sized by how often you say them</li>
+            <li>Personal "fingerprints" — words only you or they use</li>
+            <li>Full chat analysis: thousands of messages distilled</li>
+        </ol>
+    </aside>
+
+    {% include "partials/export_guide.html" %}
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/create.js') }}"></script>
+<script src="{{ url_for('static', filename='js/export_guide.js') }}"></script>
+{% endblock %}

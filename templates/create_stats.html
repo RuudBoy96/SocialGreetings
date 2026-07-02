@@ -2,6 +2,10 @@
 
 {% block title %}Create Stats Card — SocialGreetings{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/export_guide.css') }}">
+{% endblock %}
+
 {% block content %}
 <section class="create-page create-page-wide">
     <div class="create-header">
@@ -19,8 +23,19 @@
             <p class="upload-filename" id="upload-filename"></p>
         </div>
 
+        <p class="upload-trust">🔒 Your messages are 100% secure — your file is deleted the instant your card is made. <a href="{{ url_for('privacy') }}">How we protect you</a></p>
+
         <div class="form-section" id="options-section" hidden>
-            <h3>Platform &amp; layout</h3>
+            <h3>Occasion</h3>
+            <label for="occasion">What are you celebrating?</label>
+            <select name="occasion" id="occasion">
+                {% for key, o in occasions.items() %}
+                <option value="{{ o.id }}">{{ o.icon }} {{ o.label }}</option>
+                {% endfor %}
+            </select>
+            <p class="field-hint">We'll tailor the cover captions to the occasion.</p>
+
+            <h3 class="section-divider">Platform &amp; layout</h3>
 
             <label for="platform">Messaging platform</label>
             <select name="platform" id="platform">
@@ -91,9 +106,12 @@
             Generate stats card
         </button>
     </form>
+
+    {% include "partials/export_guide.html" %}
 </section>
 {% endblock %}
 
 {% block extra_js %}
 <script src="{{ url_for('static', filename='js/create.js') }}"></script>
+<script src="{{ url_for('static', filename='js/export_guide.js') }}"></script>
 {% endblock %}

@@ -1,0 +1,27 @@
+{# Guided, per-platform chat export instructions. Expects `platforms` in context. #}
+{% set _guide_platforms = guide_platforms | default(platforms) %}
+<div class="export-guide" id="export-guide">
+    <h3 class="export-guide-title">How to export your chat</h3>
+    <p class="export-guide-sub">No account linking needed — just export your conversation as a <strong>.txt</strong> file and upload it. Pick your app:</p>
+
+    <div class="export-tabs" role="tablist">
+        {% for key, p in _guide_platforms.items() %}
+        <button type="button" class="export-tab{% if loop.first %} is-active{% endif %}"
+                data-export-tab="{{ p.id }}" role="tab"
+                aria-selected="{{ 'true' if loop.first else 'false' }}">
+            <span class="export-tab-icon">{{ p.icon }}</span> {{ p.name }}
+        </button>
+        {% endfor %}
+    </div>
+
+    {% for key, p in _guide_platforms.items() %}
+    <div class="export-panel{% if loop.first %} is-active{% endif %}" data-export-panel="{{ p.id }}" role="tabpanel">
+        <ol class="export-steps">
+            {% for step in p.export_steps %}
+            <li>{{ step }}</li>
+            {% endfor %}
+        </ol>
+        {% if p.note %}<p class="export-note">💡 {{ p.note }}</p>{% endif %}
+    </div>
+    {% endfor %}
+</div>

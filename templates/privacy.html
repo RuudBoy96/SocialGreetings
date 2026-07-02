@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Privacy &amp; Security — SocialGreetings{% endblock %}
+
+{% block content %}
+<section class="legal-page">
+    <div class="legal-header">
+        <div class="hero-badge">🔒 Your messages are 100% secure</div>
+        <h1>Privacy &amp; security</h1>
+        <p>Your conversations are deeply personal. We built SocialGreetings so your messages
+            can never be stolen, sold, or seen by anyone but you.</p>
+    </div>
+
+    <div class="legal-grid">
+        <div class="legal-card">
+            <h3>🗑️ Your chat file is deleted instantly</h3>
+            <p>The file you upload is processed in memory to build your card and then deleted
+                the moment your card is generated. We never keep your raw chat export.</p>
+        </div>
+        <div class="legal-card">
+            <h3>⏱️ Cards auto-delete after {{ retention_minutes }} minutes</h3>
+            <p>Your card stays available while you have it open. After {{ retention_minutes }}
+                minutes of inactivity it is permanently deleted — and you can delete it yourself
+                at any time with one click.</p>
+        </div>
+        <div class="legal-card">
+            <h3>🔐 Encrypted while it exists</h3>
+            <p>For the short time your card exists, its contents are encrypted at rest, so the
+                stored data is useless to anyone who should not have it.</p>
+        </div>
+        <div class="legal-card">
+            <h3>🔗 Private, unguessable links</h3>
+            <p>Every card lives behind a long, random link that can't be guessed or enumerated.
+                No account, email, or password required.</p>
+        </div>
+        <div class="legal-card">
+            <h3>🚫 Never sold, shared, or used for ads</h3>
+            <p>Your messages are used for one thing only — making your card. We don't sell or
+                share your data, and there are no third-party advertising trackers.</p>
+        </div>
+        <div class="legal-card">
+            <h3>🛡️ Secure by design</h3>
+            <p>Traffic is served with strict security headers and a content security policy, and
+                your message content is never sent to any outside service.</p>
+        </div>
+    </div>
+
+    <div class="legal-footer">
+        <a href="{{ url_for('create_hub') }}" class="btn btn-primary btn-lg">Create your card</a>
+        <a href="{{ url_for('landing') }}" class="btn btn-ghost btn-lg">Back home</a>
+    </div>
+</section>
+{% endblock %}
