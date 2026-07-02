@@ -1020,5 +1020,8 @@ def preview_participants():
 
 
 if __name__ == "__main__":
-    print("SocialGreetings running at http://localhost:5000")
-    app.run(debug=True, port=5000, threaded=True)
+    port = int(os.environ.get("PORT", 5000))
+    debug = os.environ.get("FLASK_DEBUG", "true").lower() in ("1", "true", "yes")
+    host = os.environ.get("FLASK_HOST", "0.0.0.0")
+    print(f"SocialGreetings running at http://{host}:{port}")
+    app.run(debug=debug, port=port, host=host, threaded=True)

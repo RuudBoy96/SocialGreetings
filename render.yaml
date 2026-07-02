@@ -1,0 +1,25 @@
+# Render Blueprint — https://render.com/docs/blueprint-spec
+# Connect repo at https://dashboard.render.com → New → Blueprint → SocialGreetings
+
+services:
+  - type: web
+    name: socialgreetings
+    runtime: docker
+    plan: free
+    branch: main
+    healthCheckPath: /
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: CARD_DATA_KEY
+        generateValue: true
+      - key: PUBLIC_BASE_URL
+        sync: false
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: PRODIGI_API_KEY
+        sync: false
+      - key: PRODIGI_SANDBOX
+        value: "true"

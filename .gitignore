@@ -14,6 +14,8 @@ generated/
 test_out.txt
 extracted_messages.json
 WhatsApp Chat with Kim Butler.txt
+bin/
+whatsapp background.jpg
 
 # OS / editor
 .DS_Store

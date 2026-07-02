@@ -1,0 +1,11 @@
+.venv
+.git
+__pycache__
+*.pyc
+.env
+uploads/*
+generated/*
+*.jpg
+!static/img/hero-jamie.jpg
+!static/img/hero-laura.jpg
+whatsapp background.jpg
