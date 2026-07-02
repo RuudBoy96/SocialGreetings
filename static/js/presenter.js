@@ -1,5 +1,10 @@
 const INSIDE_FONT_CLASSES = ['font-classic', 'font-modern', 'font-handwritten', 'font-elegant', 'font-typewriter'];
 const INSIDE_SIZE_CLASSES = ['size-small', 'size-medium', 'size-large', 'size-xlarge'];
+const INSIDE_ALIGN_CLASSES = ['align-left', 'align-center', 'align-right'];
+const INSIDE_ZONE_IDS = ['top', 'middle', 'bottom'];
+const DEFAULT_ZONE_ALIGN = { top: 'left', middle: 'center', bottom: 'center' };
+const DEFAULT_ZONE_COLOR = 'charcoal';
+const DEFAULT_COLOR_HEX = '#2d2a26';
 
 const SLIDE_LABELS = {
     front: 'Front cover',
@@ -20,12 +25,8 @@ class CardViewer {
         this.thumbStrip = document.getElementById('page-thumb-strip');
         this.controls = document.getElementById('presenter-controls');
         this.insidePanel = document.getElementById('personalise-panel');
-        this.insideInput = document.getElementById('inside-message-edit');
-        this.fontSelect = document.getElementById('inside-font-edit');
-        this.sizeSelect = document.getElementById('inside-font-size-edit');
         this.saveBtn = document.getElementById('btn-save');
         this.saveStatus = document.getElementById('save-status');
-        this.insideContent = document.querySelector('.inside-content');
         this.loadingOverlay = document.getElementById('card-loading-overlay');
         this.current = 0;
         this.loaded = false;
@@ -90,32 +91,99 @@ class CardViewer {
         });
     }
 
+    getZoneEditor(zoneId) {
+        return document.querySelector(`.inside-zone-editor[data-zone="${zoneId}"]`);
+    }
+
+    getZonePickerValue(zoneId, pickerSelector, dataKey, fallback) {
+        const editor = this.getZoneEditor(zoneId);
+        const selected = editor?.querySelector(`${pickerSelector}.is-selected`);
+        return selected?.dataset[dataKey] || fallback;
+    }
+
+    getZoneElements(zoneId) {
+        return {
+            input: document.getElementById(`inside-message-${zoneId}`),
+            editor: this.getZoneEditor(zoneId),
+            preview: document.querySelector(`.inside-zone--${zoneId}`),
+        };
+    }
+
+    updateZonePreview(zoneId) {
+        const { input, editor, preview } = this.getZoneElements(zoneId);
+        if (!preview) return;
+
+        const val = input?.value?.trim() || '';
+        let el = preview.querySelector('.inside-message, .inside-placeholder');
+        if (!el) {
+            el = document.createElement('p');
+            preview.appendChild(el);
+        }
+
+        if (val) {
+            el.textContent = val;
+            el.className = 'inside-message';
+            preview.classList.remove('is-empty');
+        } else if (zoneId === 'middle') {
+            el.textContent = 'Your personal message will appear here';
+            el.className = 'inside-placeholder';
+            preview.classList.remove('is-empty');
+        } else {
+            el.remove();
+            preview.classList.add('is-empty');
+        }
+
+        const font = this.getZonePickerValue(zoneId, '.font-tile', 'font', 'classic');
+        INSIDE_FONT_CLASSES.forEach((c) => preview.classList.remove(c));
+        preview.classList.add(`font-${font}`);
+
+        const size = this.getZonePickerValue(zoneId, '.size-tile', 'size', 'medium');
+        INSIDE_SIZE_CLASSES.forEach((c) => preview.classList.remove(c));
+        preview.classList.add(`size-${size}`);
+
+        const align = this.getZonePickerValue(zoneId, '.align-tile', 'align', DEFAULT_ZONE_ALIGN[zoneId] || 'center');
+        INSIDE_ALIGN_CLASSES.forEach((c) => preview.classList.remove(c));
+        preview.classList.add(`align-${align}`);
+
+        const colorBtn = editor?.querySelector('.color-swatch.is-selected');
+        const colorHex = colorBtn?.dataset.hex || DEFAULT_COLOR_HEX;
+        if (el) {
+            el.style.color = colorHex;
+        }
+    }
+
     setupInsideEditor() {
-        const updateText = () => {
-            if (!this.insideContent) return;
-            const el = this.insideContent.querySelector('.inside-message, .inside-placeholder');
-            if (!el) return;
-            const val = this.insideInput?.value || '';
-            el.textContent = val || 'Your personal message will appear here';
-            el.classList.toggle('inside-placeholder', !val);
-            el.classList.toggle('inside-message', !!val);
-        };
+        document.querySelectorAll('.inside-zone-editor').forEach((editor) => {
+            const zoneId = editor.dataset.zone;
+            editor.querySelectorAll('.font-tile, .size-tile, .align-tile, .color-swatch').forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    const group = btn.closest('.font-picker, .size-picker, .align-picker, .color-picker');
+                    group?.querySelectorAll('.is-selected').forEach((el) => {
+                        el.classList.remove('is-selected');
+                        el.setAttribute('aria-checked', 'false');
+                    });
+                    btn.classList.add('is-selected');
+                    btn.setAttribute('aria-checked', 'true');
+                    this.updateZonePreview(zoneId);
+                });
+            });
 
-        const updateFont = () => {
-            if (!this.insideContent) return;
-            if (this.fontSelect) {
-                INSIDE_FONT_CLASSES.forEach((c) => this.insideContent.classList.remove(c));
-                this.insideContent.classList.add(`font-${this.fontSelect.value}`);
-            }
-            if (this.sizeSelect) {
-                INSIDE_SIZE_CLASSES.forEach((c) => this.insideContent.classList.remove(c));
-                this.insideContent.classList.add(`size-${this.sizeSelect.value}`);
-            }
-        };
+            const { input } = this.getZoneElements(zoneId);
+            input?.addEventListener('input', () => this.updateZonePreview(zoneId));
+        });
 
-        this.insideInput?.addEventListener('input', updateText);
-        this.fontSelect?.addEventListener('change', updateFont);
-        this.sizeSelect?.addEventListener('change', updateFont);
+        document.querySelectorAll('.inside-preset-btn').forEach((btn) => {
+            btn.addEventListener('click', () => {
+                const middleInput = document.getElementById('inside-message-middle');
+                const message = btn.dataset.presetMessage || '';
+                if (middleInput) {
+                    middleInput.value = message;
+                    this.updateZonePreview('middle');
+                }
+            });
+        });
+
+        INSIDE_ZONE_IDS.forEach((zoneId) => this.updateZonePreview(zoneId));
     }
 
     getSlideLabel(slide) {
@@ -215,12 +283,23 @@ class CardViewer {
         if (this.current > 0) this.goTo(this.current - 1);
     }
 
+    collectInsideZones() {
+        const zones = {};
+        INSIDE_ZONE_IDS.forEach((zoneId) => {
+            const { input } = this.getZoneElements(zoneId);
+            zones[zoneId] = {
+                message: input?.value || '',
+                font: this.getZonePickerValue(zoneId, '.font-tile', 'font', 'classic'),
+                font_size: this.getZonePickerValue(zoneId, '.size-tile', 'size', 'medium'),
+                align: this.getZonePickerValue(zoneId, '.align-tile', 'align', DEFAULT_ZONE_ALIGN[zoneId] || 'center'),
+                color: this.getZonePickerValue(zoneId, '.color-swatch', 'color', DEFAULT_ZONE_COLOR),
+            };
+        });
+        return zones;
+    }
+
     async saveEdits() {
-        const payload = {
-            inside_message: this.insideInput?.value || '',
-            inside_font: this.fontSelect?.value || 'classic',
-            inside_font_size: this.sizeSelect?.value || 'medium',
-        };
+        const payload = { inside_zones: this.collectInsideZones() };
 
         try {
             const res = await fetch(`/api/card/${this.cardId}/update`, {

@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}Order confirmed — SocialGreetings{% endblock %}
+
+{% block extra_head %}<meta name="card-id" content="{{ card.card_id }}">{% endblock %}
+
+{% block extra_css %}
+<style>
+.confirm-page {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 3rem 2rem 4rem;
+    text-align: center;
+}
+
+.confirm-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.confirm-page h1 {
+    margin: 0 0 0.75rem;
+    font-size: 1.85rem;
+}
+
+.confirm-page .lead {
+    color: var(--text-muted);
+    margin: 0 0 2rem;
+    line-height: 1.6;
+}
+
+.confirm-card {
+    background: var(--surface);
+    border: 1px solid rgba(61, 54, 50, 0.08);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    text-align: left;
+    margin-bottom: 1.5rem;
+}
+
+.confirm-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    font-size: 0.9rem;
+    padding: 0.35rem 0;
+    border-bottom: 1px solid rgba(61, 54, 50, 0.06);
+}
+
+.confirm-row:last-child {
+    border-bottom: none;
+}
+
+.confirm-row label {
+    color: var(--text-muted);
+}
+
+.confirm-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.fulfillment-note {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-top: 1.5rem;
+    line-height: 1.6;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="confirm-page">
+    <div class="confirm-icon" aria-hidden="true">✓</div>
+    <h1>Thank you — order received!</h1>
+    <p class="lead">
+        Payment confirmed. We're preparing your watermark-free card for printing
+        {% if card.prodigi_order_id %} (order {{ card.prodigi_order_id }}){% endif %}.
+    </p>
+
+    <div class="confirm-card">
+        <div class="confirm-row">
+            <label>Card for</label>
+            <span>{{ card.receiver_name }} · {{ card.contact_name }}</span>
+        </div>
+        <div class="confirm-row">
+            <label>Messages</label>
+            <span>{{ card.total_count }}</span>
+        </div>
+        {% if card.prodigi_order_id %}
+        <div class="confirm-row">
+            <label>Print order ID</label>
+            <span>{{ card.prodigi_order_id }}</span>
+        </div>
+        {% elif card.fulfillment_status == 'failed' %}
+        <div class="confirm-row">
+            <label>Print status</label>
+            <span>Processing — we'll retry shortly</span>
+        </div>
+        {% else %}
+        <div class="confirm-row">
+            <label>Print status</label>
+            <span>Submitting to print partner…</span>
+        </div>
+        {% endif %}
+        <div class="confirm-row">
+            <label>Stored until</label>
+            <span>{{ paid_retention_days }} days from purchase</span>
+        </div>
+    </div>
+
+    <div class="confirm-actions">
+        {% if clean_token %}
+        <a href="{{ url_for('card_pdf', card_id=card.card_id, token=clean_token) }}" class="btn btn-primary btn-lg btn-full">
+            Download print-ready PDF
+        </a>
+        {% endif %}
+        <a href="{{ url_for('view_card', card_id=card.card_id) }}" class="btn btn-ghost btn-full">View card preview</a>
+        <a href="{{ url_for('landing') }}" class="btn btn-ghost btn-full">Back to home</a>
+    </div>
+
+    <p class="fulfillment-note">
+        Delivery times depend on your shipping country and method. You'll receive updates from our print partner once your card ships.
+    </p>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/card_session.js') }}"></script>
+{% endblock %}

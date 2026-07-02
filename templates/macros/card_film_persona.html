@@ -1,0 +1,37 @@
+{% macro card_film_persona(slug, name, emoji, avatar_file, bubbles, inside_text, inside_sign, delayed=false) %}
+<div class="card-film-persona card-film-persona--{{ slug }}">
+    <div class="card-film-card{% if delayed %} card-film-card--delayed{% endif %}">
+        <div class="cf-page cf-page--front{% if delayed %} cf-page--delayed{% endif %}">
+            <div class="cf-header">
+                <span class="cf-avatar">
+                    <img src="{{ url_for('static', filename='img/' ~ avatar_file) }}" alt="">
+                </span>
+                <span class="cf-contact">
+                    <strong>{{ name }} {{ emoji }}</strong>
+                    <small>online</small>
+                </span>
+            </div>
+            <div class="cf-collage cf-collage--dense">
+                {% for bubble in bubbles %}
+                <span class="cf-bubble cf-bubble--dense {{ bubble.dir }}">{{ bubble.text }}</span>
+                {% endfor %}
+            </div>
+            <div class="cf-footer" aria-hidden="true">
+                <span class="cf-footer-emoji"></span>
+                <span class="cf-footer-input">Message</span>
+                <span class="cf-footer-mic"></span>
+            </div>
+        </div>
+
+        <div class="cf-page cf-page--inside{% if delayed %} cf-page--delayed{% endif %}">
+            <p class="cf-inside-text">{{ inside_text }}</p>
+            <span class="cf-inside-sign">{{ inside_sign }}</span>
+        </div>
+
+        <div class="cf-page cf-page--back{% if delayed %} cf-page--delayed{% endif %}">
+            <span class="cf-logo">SocialGreetings</span>
+            <span class="cf-back-sub">Turn your conversations into keepsakes.</span>
+        </div>
+    </div>
+</div>
+{% endmacro %}

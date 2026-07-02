@@ -135,14 +135,23 @@
 </div>
 {% endmacro %}
 
-{% macro card_inside(inside_message, inside_font, inside_font_size) %}
+{% macro card_inside(inside_zones, inside_text_colors=none) %}
+{% set fallback = {"message": "", "font": "classic", "font_size": "medium", "align": "center", "color": "charcoal"} %}
+{% set colors = inside_text_colors or {} %}
 <div class="card-page-inside">
-    <div class="inside-content font-{{ inside_font }} size-{{ inside_font_size }}">
-        {% if inside_message %}
-        <p class="inside-message">{{ inside_message }}</p>
-        {% else %}
-        <p class="inside-placeholder">Your personal message will appear here</p>
+    {% for zone_id in ['top', 'middle', 'bottom'] %}
+    {% set zone = inside_zones.get(zone_id, fallback) if inside_zones else fallback %}
+    {% set zone_align = zone.align|default('left' if zone_id == 'top' else 'center') %}
+    {% set zone_color = zone.color|default('charcoal') %}
+    {% set color_hex = colors[zone_color].hex if colors and zone_color in colors else '#2d2a26' %}
+    <div class="inside-zone inside-zone--{{ zone_id }} font-{{ zone.font }} size-{{ zone.font_size }} align-{{ zone_align }}{% if not zone.message %} is-empty{% endif %}"
+         data-zone="{{ zone_id }}">
+        {% if zone.message %}
+        <p class="inside-message" style="color: {{ color_hex }}">{{ zone.message }}</p>
+        {% elif zone_id == 'middle' %}
+        <p class="inside-placeholder" style="color: {{ color_hex }}">Your personal message will appear here</p>
         {% endif %}
     </div>
+    {% endfor %}
 </div>
 {% endmacro %}

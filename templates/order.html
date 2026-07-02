@@ -61,7 +61,10 @@
     font-weight: 700;
 }
 
-.order-summary {
+.order-summary,
+.checkout-panel,
+.order-specs,
+.privacy-note {
     background: var(--surface);
     border: 1px solid rgba(61, 54, 50, 0.08);
     border-radius: var(--radius);
@@ -69,7 +72,8 @@
     margin-bottom: 1.5rem;
 }
 
-.order-summary h2 {
+.order-summary h2,
+.checkout-panel h2 {
     margin: 0 0 1rem;
     font-size: 1rem;
 }
@@ -108,25 +112,68 @@
     line-height: 1.5;
 }
 
+.checkout-field {
+    margin-bottom: 1rem;
+}
+
+.checkout-field label {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 600;
+    margin-bottom: 0.35rem;
+}
+
+.checkout-field select {
+    width: 100%;
+    padding: 0.55rem 0.75rem;
+    border-radius: 8px;
+    border: 1px solid rgba(61, 54, 50, 0.15);
+    font: inherit;
+    background: var(--surface-2);
+}
+
+.price-breakdown {
+    border-top: 1px solid rgba(61, 54, 50, 0.08);
+    margin-top: 1rem;
+    padding-top: 1rem;
+}
+
+.price-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    margin-bottom: 0.45rem;
+    color: var(--text-muted);
+}
+
+.price-row--total {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px dashed rgba(61, 54, 50, 0.12);
+}
+
+.checkout-status {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin: 0.75rem 0 0;
+    min-height: 1.2em;
+}
+
+.checkout-status.is-error {
+    color: #b44;
+}
+
 .order-actions {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
-    margin-bottom: 2rem;
+    margin-top: 1.25rem;
 }
 
-.order-specs,
-.print-partners,
-.privacy-note {
-    background: var(--surface);
-    border: 1px solid rgba(61, 54, 50, 0.08);
-    border-radius: var(--radius);
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
-}
-
-.order-specs h3,
-.print-partners h3 {
+.order-specs h3 {
     margin: 0 0 0.75rem;
     font-size: 0.95rem;
 }
@@ -137,42 +184,6 @@
     color: var(--text-muted);
     font-size: 0.85rem;
     line-height: 1.7;
-}
-
-.partner-links {
-    display: flex;
-    flex-direction: column;
-    gap: 0.6rem;
-    margin-top: 1rem;
-}
-
-.partner-link {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.75rem 1rem;
-    background: var(--surface-2);
-    border-radius: 10px;
-    border: 1px solid rgba(61, 54, 50, 0.06);
-    transition: border-color 0.15s;
-}
-
-.partner-link:hover {
-    border-color: rgba(201, 123, 132, 0.35);
-}
-
-.partner-link--primary {
-    border-color: rgba(201, 123, 132, 0.45);
-    background: linear-gradient(135deg, rgba(201, 123, 132, 0.1), rgba(232, 165, 152, 0.08));
-}
-
-.partner-link strong {
-    font-size: 0.9rem;
-}
-
-.partner-link span {
-    font-size: 0.78rem;
-    color: var(--text-muted);
 }
 
 .privacy-note {
@@ -208,13 +219,13 @@
 <section class="order-page">
     <div class="order-header">
         <h1>Order your Love Messages card</h1>
-        <p>Download a print-ready PDF, then send it to a print service of your choice.</p>
+        <p>We print and ship your card — watermark-free artwork, delivered to your door.</p>
     </div>
 
     <div class="order-steps">
         <span class="order-step"><span class="order-step-num">1</span> Preview</span>
-        <span class="order-step"><span class="order-step-num">2</span> Download PDF</span>
-        <span class="order-step"><span class="order-step-num">3</span> Choose printer</span>
+        <span class="order-step"><span class="order-step-num">2</span> Shipping</span>
+        <span class="order-step"><span class="order-step-num">3</span> Pay</span>
     </div>
 
     <div class="order-summary">
@@ -245,7 +256,15 @@
                 <span>{{ card.receiver_name }} · {{ card.contact_name }}</span>
             </div>
         </div>
-        {% if card.inside_message %}
+        {% set zones = card.inside_zones if card.inside_zones is defined else {} %}
+        {% if zones.top.message or zones.middle.message or zones.bottom.message %}
+        <div class="inside-preview">
+            <label style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;">Inside messages</label>
+            {% if zones.top.message %}<blockquote><small>Top</small> {{ zones.top.message }}</blockquote>{% endif %}
+            {% if zones.middle.message %}<blockquote><small>Middle</small> {{ zones.middle.message }}</blockquote>{% endif %}
+            {% if zones.bottom.message %}<blockquote><small>Bottom</small> {{ zones.bottom.message }}</blockquote>{% endif %}
+        </div>
+        {% elif card.inside_message %}
         <div class="inside-preview">
             <label style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;">Inside message</label>
             <blockquote>{{ card.inside_message }}</blockquote>
@@ -253,55 +272,67 @@
         {% endif %}
     </div>
 
-    <div class="order-actions order-page-actions">
-        <a href="{{ url_for('card_pdf', card_id=card.card_id) }}" class="btn btn-primary btn-lg btn-full">Download print-ready PDF</a>
-        <a href="{{ url_for('view_card', card_id=card.card_id) }}" class="btn btn-ghost btn-full">Back to preview</a>
-    </div>
+    <div class="checkout-panel" id="checkout-panel"
+         data-card-id="{{ card.card_id }}"
+         data-stripe-configured="{{ 'true' if stripe_configured else 'false' }}"
+         data-base-price="{{ card_price_pence }}">
+        <h2>Checkout</h2>
 
-    <div class="order-specs">
-        <h3>Print specifications</h3>
-        <ul>
-            <li><strong>Size:</strong> {{ dims }} ({{ card.orientation|default('portrait') }})</li>
-            <li><strong>Resolution:</strong> Export at 300 DPI for best results</li>
-            <li><strong>Bleed:</strong> Add 3 mm bleed if your printer requires it</li>
-            <li><strong>Colour:</strong> Save as PDF with background graphics enabled</li>
-        </ul>
-    </div>
+        <div class="checkout-field">
+            <label for="shipping-country">Shipping country</label>
+            <select id="shipping-country" name="country">
+                <option value="GB" selected>United Kingdom</option>
+                <option value="US">United States</option>
+                <option value="CA">Canada</option>
+                <option value="AU">Australia</option>
+                <option value="IE">Ireland</option>
+                <option value="FR">France</option>
+                <option value="DE">Germany</option>
+                <option value="ES">Spain</option>
+                <option value="IT">Italy</option>
+                <option value="NL">Netherlands</option>
+            </select>
+        </div>
 
-    <div class="print-partners">
-        <h3>Send to a print service</h3>
-        <p style="margin:0 0 0.75rem;font-size:0.85rem;color:var(--text-muted);">
-            Your PDF is print-ready at the exact card size. Send it to our recommended partner:
-        </p>
-        <a href="https://www.prodigi.com/products/cards/greeting-cards/" target="_blank" rel="noopener" class="partner-link partner-link--primary">
-            <div>
-                <strong>Prodigi — recommended</strong><br>
-                <span>Global print &amp; delivery for folded greeting cards</span>
-            </div>
-            <span>Print my card →</span>
-        </a>
-        <p style="margin:1rem 0 0.4rem;font-size:0.78rem;color:var(--text-muted);">Prefer another service? These also accept your PDF:</p>
-        <div class="partner-links">
-            <a href="https://www.printed.com/" target="_blank" rel="noopener" class="partner-link">
-                <div>
-                    <strong>Printed.com</strong><br>
-                    <span>UK — upload PDF, greeting cards</span>
-                </div>
-                <span>→</span>
+        <div class="checkout-field">
+            <label for="shipping-method">Delivery speed</label>
+            <select id="shipping-method" name="shipping_method" disabled>
+                <option value="Standard">Standard delivery</option>
+            </select>
+        </div>
+
+        <div class="price-breakdown" id="price-breakdown">
+            <div class="price-row"><span>Card</span><span id="price-card">—</span></div>
+            <div class="price-row"><span>Shipping</span><span id="price-shipping">—</span></div>
+            <div class="price-row price-row--total"><span>Total</span><span id="price-total">—</span></div>
+        </div>
+
+        <p class="checkout-status" id="checkout-status">Fetching shipping quote…</p>
+
+        <div class="order-actions">
+            <button type="button" id="checkout-btn" class="btn btn-primary btn-lg btn-full" disabled>
+                Order &amp; pay
+            </button>
+            <a href="{{ url_for('card_pdf', card_id=card.card_id) }}" class="btn btn-ghost btn-full">
+                Download watermarked sample PDF
             </a>
-            <a href="https://www.gelato.com/" target="_blank" rel="noopener" class="partner-link">
-                <div>
-                    <strong>Gelato</strong><br>
-                    <span>Global network, greeting cards</span>
-                </div>
-                <span>→</span>
-            </a>
+            <a href="{{ url_for('view_card', card_id=card.card_id) }}" class="btn btn-ghost btn-full">Back to preview</a>
         </div>
     </div>
 
+    <div class="order-specs">
+        <h3>What happens next</h3>
+        <ul>
+            <li>Pay securely via Stripe — you'll enter your delivery address at checkout.</li>
+            <li>We send your watermark-free artwork to our print partner (Prodigi) automatically.</li>
+            <li>Your card is printed at {{ dims }} and shipped to your address.</li>
+            <li>Paid cards are kept for 7 days so we can fulfil your order.</li>
+        </ul>
+    </div>
+
     <div class="privacy-note">
-        Your messages are private. Your chat file was deleted the moment this card was made,
-        this card is encrypted and auto-deletes after 30 minutes of inactivity, and you can remove it now.
+        Your messages are private. Your chat file was deleted the moment this card was made.
+        On paid orders we send print-ready artwork (not your raw chat) to Prodigi for fulfilment.
         <a href="{{ url_for('privacy') }}">Learn more</a>.
         <button type="button" data-delete-card class="btn btn-ghost btn-sm">Delete my card now</button>
     </div>
@@ -315,4 +346,5 @@
 
 {% block extra_js %}
 <script src="{{ url_for('static', filename='js/card_session.js') }}"></script>
+<script src="{{ url_for('static', filename='js/checkout.js') }}"></script>
 {% endblock %}

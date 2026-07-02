@@ -72,9 +72,17 @@
 
         <h2>Print partners</h2>
         <p>
-            If you order a print, you download a PDF and upload it to a third-party print service (e.g. Prodigi, Printed.com, Gelato).
-            Those services have their own privacy policies. We do not automatically send your chat data to print partners —
-            only the PDF you choose to upload.
+            When you order a printed card through our checkout, we automatically send watermark-free print artwork
+            to <strong>Prodigi</strong> for printing and delivery. Prodigi has its own privacy policy governing
+            how they handle fulfilment data.
+        </p>
+        <p>
+            Unpaid previews include a visible watermark. Free sample PDFs are also watermarked — clean artwork
+            is only generated after successful payment.
+        </p>
+        <p>
+            Paid orders are retained for {{ paid_retention_days|default(7) }} days to allow fulfilment;
+            unpaid previews auto-delete after {{ retention_minutes }} minutes.
         </p>
 
         <h2>Contact</h2>

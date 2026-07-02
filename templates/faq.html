@@ -48,8 +48,9 @@
         <details class="faq-item">
             <summary>Do you share data with print partners?</summary>
             <p>
-                No. When you order a print, you download a PDF and upload it yourself to a print service.
-                We do not automatically send your chat or card data to Printed.com, Prodigi, Gelato, or any other partner.
+                When you pay for a printed card, we send watermark-free print artwork (not your raw chat export)
+                to our print partner Prodigi so they can print and ship your order. Unpaid previews stay on our
+                servers only and are never sent to print partners.
             </p>
         </details>
 
@@ -65,7 +66,8 @@
             <summary>Can I delete my data before 30 minutes?</summary>
             <p>
                 Yes. On your card preview page, click <strong>Delete now</strong>. Your card data will be removed immediately
-                and the preview link will stop working.
+                and the preview link will stop working. Paid orders are kept for {{ paid_retention_days|default(7) }} days
+                so we can fulfil printing.
             </p>
         </details>
 
@@ -80,6 +82,14 @@
 
     <div class="faq-section">
         <h2 class="faq-section-title">Product</h2>
+
+        <details class="faq-item">
+            <summary>Why does my preview have a watermark?</summary>
+            <p>
+                Unpaid previews include a visible watermark to protect your artwork. After you pay for a printed card,
+                we generate watermark-free files for printing and download.
+            </p>
+        </details>
 
         <details class="faq-item">
             <summary>How do I export my chat from WhatsApp?</summary>

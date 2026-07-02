@@ -4,6 +4,8 @@
 {% from "macros/carousel.html" import carousel_controls, inside_editor_panel %}
 {% from "macros/preview_ui.html" import card_3d_wrapper %}
 
+{% block body_class %}{% if show_watermark|default(false) %} class="has-preview-watermark"{% endif %}{% endblock %}
+
 {% block title %}Your Love Messages card — SocialGreetings{% endblock %}
 
 {% block extra_head %}<meta name="card-id" content="{{ card.card_id }}">{% endblock %}
@@ -28,19 +30,28 @@
             <span class="expiry-countdown" id="expiry-countdown" data-expires="{{ card.expires_at|default('') }}"></span>
             <button type="button" data-delete-card class="btn btn-ghost btn-sm btn-danger">Delete now</button>
             <a href="{{ url_for('create') }}" class="btn btn-ghost btn-sm">New card</a>
-            <a href="{{ url_for('card_pdf', card_id=card.card_id) }}" class="btn btn-ghost btn-sm">Download PDF</a>
-            <a href="{{ url_for('order_card', card_id=card.card_id) }}" class="btn btn-primary btn-sm">Order now</a>
+            {% if card.paid|default(false) and clean_token|default(none) %}
+            <a href="{{ url_for('card_pdf', card_id=card.card_id, token=clean_token) }}" class="btn btn-ghost btn-sm">Download PDF</a>
+            {% endif %}
+            <a href="{{ url_for('order_card', card_id=card.card_id) }}" class="btn btn-primary btn-sm">{% if card.paid|default(false) %}Order again{% else %}Order now{% endif %}</a>
         </div>
     </div>
 
     <p class="card-privacy-note no-print">
-        Your card link is private. Data auto-deletes after 30 minutes of inactivity.
+        {% if card.paid|default(false) %}
+        Your card is paid — artwork saved for {{ paid_retention_days|default(7) }} days.
+        {% else %}
+        Preview only — order a print for watermark-free artwork. Data auto-deletes after 30 minutes.
+        {% endif %}
         <a href="{{ url_for('privacy') }}">Privacy policy</a>
     </p>
 
     <div class="presenter-layout">
         <div class="presenter-main">
-            <div class="presenter-stage">
+            <div class="presenter-stage{% if show_watermark|default(false) %} has-preview-watermark{% endif %}">
+                {% if show_watermark|default(false) %}
+                <div class="preview-watermark-layer" aria-hidden="true"></div>
+                {% endif %}
                 <div class="card-loading-overlay" id="card-loading-overlay">
                     <div class="card-loading-spinner" aria-hidden="true"></div>
                     <p>Building your card…</p>
@@ -50,7 +61,7 @@
                     <div class="card-viewer-track carousel-track" id="card-viewer-track">
                         <div class="card-viewer-slide carousel-slide is-active" data-slide-type="front">
                             {% call card_3d_wrapper() %}
-                            <div class="card-page orientation-{{ card.orientation|default('portrait') }}"
+                            <div class="card-page orientation-{{ card.orientation|default('portrait') }}{% if show_watermark|default(false) %} has-preview-watermark{% endif %}"
                                  data-platform="{{ card.platform|default('whatsapp') }}">
                                 {{ chat_header(card.platform|default('whatsapp'), card.contact_name, contact_avatar=card.contact_avatar|default(none)) }}
                                 <div class="chat-body collage-body" id="chat-page-1"></div>
@@ -61,7 +72,7 @@
 
                         <div class="card-viewer-slide carousel-slide card-viewer-slide--optional carousel-slide--optional" id="carousel-slide-2" data-slide-type="front2">
                             {% call card_3d_wrapper() %}
-                            <div class="card-page orientation-{{ card.orientation|default('portrait') }}"
+                            <div class="card-page orientation-{{ card.orientation|default('portrait') }}{% if show_watermark|default(false) %} has-preview-watermark{% endif %}"
                                  data-platform="{{ card.platform|default('whatsapp') }}">
                                 {{ chat_header(card.platform|default('whatsapp'), card.contact_name, contact_avatar=card.contact_avatar|default(none)) }}
                                 <div class="chat-body collage-body" id="chat-page-2"></div>
@@ -72,16 +83,16 @@
 
                         <div class="card-viewer-slide carousel-slide" data-slide-type="inside">
                             {% call card_3d_wrapper() %}
-                            <div class="card-page orientation-{{ card.orientation|default('portrait') }}"
+                            <div class="card-page orientation-{{ card.orientation|default('portrait') }}{% if show_watermark|default(false) %} has-preview-watermark{% endif %}"
                                  data-platform="{{ card.platform|default('whatsapp') }}">
-                                {{ card_inside(card.inside_message|default(''), card.inside_font|default('classic'), card.inside_font_size|default('medium')) }}
+                                {{ card_inside(inside_zones, inside_text_colors) }}
                             </div>
                             {% endcall %}
                         </div>
 
                         <div class="card-viewer-slide carousel-slide" data-slide-type="back">
                             {% call card_3d_wrapper() %}
-                            <div class="card-page orientation-{{ card.orientation|default('portrait') }}"
+                            <div class="card-page orientation-{{ card.orientation|default('portrait') }}{% if show_watermark|default(false) %} has-preview-watermark{% endif %}"
                                  data-platform="{{ card.platform|default('whatsapp') }}">
                                 {{ card_back_logo() }}
                             </div>
@@ -93,16 +104,15 @@
 
             {{ carousel_controls() }}
             {{ inside_editor_panel(
-                card.inside_message|default(''),
-                card.inside_font|default('classic'),
-                card.inside_font_size|default('medium'),
+                inside_zones,
                 inside_fonts,
-                inside_font_sizes
+                inside_font_sizes,
+                inside_text_colors,
+                inside_presets
             ) }}
 
             <div class="preview-bottom-ctas no-print">
-                <a href="{{ url_for('card_pdf', card_id=card.card_id) }}" class="btn btn-ghost btn-lg">Download PDF</a>
-                <a href="{{ url_for('order_card', card_id=card.card_id) }}" class="btn btn-primary btn-lg">Order now</a>
+                <a href="{{ url_for('order_card', card_id=card.card_id) }}" class="btn btn-primary btn-lg">{% if card.paid|default(false) %}View order{% else %}Order printed card{% endif %}</a>
             </div>
         </div>
     </div>
@@ -131,6 +141,13 @@ function initCardCarousel() {
                 setTimeout(() => window.print(), 400);
             }, { once: true });
         }
+    }
+    const renderSlide = params.get('render_slide');
+    if (renderSlide !== null) {
+        document.addEventListener('card-render-complete', () => {
+            const idx = parseInt(renderSlide, 10);
+            if (!Number.isNaN(idx)) window._cardCarousel?.goTo(idx, false);
+        }, { once: true });
     }
 }
 

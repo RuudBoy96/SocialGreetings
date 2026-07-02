@@ -136,3 +136,30 @@
         print-color-adjust: exact !important;
     }
 }
+
+/* Watermarked PDF / print preview */
+body.has-preview-watermark .preview-watermark-layer {
+    display: block !important;
+}
+
+@media print {
+    body.has-preview-watermark .card-page::after {
+        content: "SocialGreetings · Preview";
+        position: absolute;
+        inset: 0;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font: 700 24pt/1.2 system-ui, sans-serif;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: rgba(201, 123, 132, 0.28);
+        transform: rotate(-28deg);
+        pointer-events: none;
+    }
+
+    body.has-preview-watermark .card-page {
+        position: relative;
+    }
+}

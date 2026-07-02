@@ -11,11 +11,106 @@
 <div class="page-thumb-strip no-print" id="page-thumb-strip" aria-label="Card page thumbnails"></div>
 {% endmacro %}
 
-{% macro inside_editor_panel(inside_message, inside_font, inside_font_size, inside_fonts, inside_font_sizes) %}
+{% macro inside_zone_editor(zone_id, zone_label, zone, inside_fonts, inside_font_sizes, inside_text_colors, inside_presets=none) %}
+{% set zone_align = zone.align|default('center') %}
+{% set zone_color = zone.color|default('charcoal') %}
+<div class="inside-zone-editor" data-zone="{{ zone_id }}">
+    <label class="personalise-label" for="inside-message-{{ zone_id }}">{{ zone_label }}</label>
+    <textarea id="inside-message-{{ zone_id }}" rows="2" placeholder="Write something from the heart…">{{ zone.message }}</textarea>
+    {% if inside_presets and zone_id == 'middle' %}
+    <div class="inside-preset-row">
+        <span class="inside-preset-label">Suggested messages</span>
+        <div class="inside-preset-buttons" id="inside-preset-buttons">
+            {% for preset in inside_presets %}
+            <button type="button" class="btn btn-ghost btn-sm inside-preset-btn" data-preset-message="{{ preset.message }}">
+                {{ preset.label }}
+            </button>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="zone-style-block">
+        <span class="style-row-label">Position</span>
+        <div class="align-picker" role="radiogroup" aria-label="Text position for {{ zone_label }}">
+            {% for align in ['left', 'center', 'right'] %}
+            <button type="button"
+                    class="align-tile{% if zone_align == align %} is-selected{% endif %}"
+                    data-align="{{ align }}"
+                    role="radio"
+                    aria-checked="{{ 'true' if zone_align == align else 'false' }}"
+                    aria-label="Align {{ align }}"
+                    title="{{ align|capitalize }}">
+                <span class="align-icon align-icon--{{ align }}" aria-hidden="true">
+                    <i></i><i></i><i></i>
+                </span>
+            </button>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="zone-style-block">
+        <span class="style-row-label">Ink colour</span>
+        <div class="color-picker" role="radiogroup" aria-label="Text colour for {{ zone_label }}">
+            {% for key, c in inside_text_colors.items() %}
+            <button type="button"
+                    class="color-swatch{% if zone_color == c.id %} is-selected{% endif %}"
+                    data-color="{{ c.id }}"
+                    data-hex="{{ c.hex }}"
+                    role="radio"
+                    aria-checked="{{ 'true' if zone_color == c.id else 'false' }}"
+                    aria-label="{{ c.label }}"
+                    title="{{ c.label }}"
+                    style="--swatch-color: {{ c.hex }}">
+                <span class="color-swatch-dot"></span>
+            </button>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="zone-style-block">
+        <span class="style-row-label">Font</span>
+        <div class="font-picker" role="radiogroup" aria-label="Font for {{ zone_label }}">
+            {% for key, f in inside_fonts.items() %}
+            <button type="button"
+                    class="font-tile{% if f.id == zone.font %} is-selected{% endif %}"
+                    data-font="{{ f.id }}"
+                    role="radio"
+                    aria-checked="{{ 'true' if f.id == zone.font else 'false' }}"
+                    aria-label="{{ f.label }}"
+                    title="{{ f.label }}"
+                    style="font-family: {{ f.family }}">
+                <span class="font-tile-sample">Aa</span>
+                <span class="font-tile-name">{{ f.label }}</span>
+            </button>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="zone-style-block">
+        <span class="style-row-label">Size</span>
+        <div class="size-picker" role="radiogroup" aria-label="Font size for {{ zone_label }}">
+            {% for key, s in inside_font_sizes.items() %}
+            <button type="button"
+                    class="size-tile size-tile--{{ s.id }}{% if s.id == zone.font_size %} is-selected{% endif %}"
+                    data-size="{{ s.id }}"
+                    role="radio"
+                    aria-checked="{{ 'true' if s.id == zone.font_size else 'false' }}"
+                    aria-label="{{ s.label }}"
+                    title="{{ s.label }}">
+                A
+            </button>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endmacro %}
+
+{% macro inside_editor_panel(inside_zones, inside_fonts, inside_font_sizes, inside_text_colors, inside_presets=none) %}
 <div class="personalise-panel no-print" id="personalise-panel">
     <div class="personalise-header">
         <h3>Personalise your card</h3>
-        <p>Add a contact photo, write your inside message, and choose a font.</p>
+        <p>Add a contact photo and write up to three inside messages — each with its own style, position, and colour.</p>
     </div>
 
     <div class="personalise-row">
@@ -26,32 +121,13 @@
         </div>
     </div>
 
-    <div class="personalise-row">
-        <label class="personalise-label" for="inside-message-edit">Inside message</label>
-        <textarea id="inside-message-edit" rows="3" placeholder="Write something from the heart…">{{ inside_message }}</textarea>
-    </div>
+    {{ inside_zone_editor('top', 'Top message', inside_zones.top, inside_fonts, inside_font_sizes, inside_text_colors) }}
+    {{ inside_zone_editor('middle', 'Middle message', inside_zones.middle, inside_fonts, inside_font_sizes, inside_text_colors, inside_presets) }}
+    {{ inside_zone_editor('bottom', 'Bottom message', inside_zones.bottom, inside_fonts, inside_font_sizes, inside_text_colors) }}
 
-    <div class="editor-row">
-        <div>
-            <label for="inside-font-edit">Font</label>
-            <select id="inside-font-edit">
-                {% for key, f in inside_fonts.items() %}
-                <option value="{{ f.id }}" {% if f.id == inside_font %}selected{% endif %}>{{ f.label }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div>
-            <label for="inside-font-size-edit">Size</label>
-            <select id="inside-font-size-edit">
-                {% for key, s in inside_font_sizes.items() %}
-                <option value="{{ s.id }}" {% if s.id == inside_font_size %}selected{% endif %}>{{ s.label }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div>
-            <button class="btn btn-primary btn-sm" id="btn-save" type="button">Save</button>
-        </div>
+    <div class="personalise-save-row">
+        <button class="btn btn-primary btn-sm" id="btn-save" type="button">Save messages</button>
+        <p class="save-status" id="save-status"></p>
     </div>
-    <p class="save-status" id="save-status"></p>
 </div>
 {% endmacro %}

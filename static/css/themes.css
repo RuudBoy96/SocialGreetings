@@ -4,7 +4,7 @@
     --chat-header-bg: #008069;
     --chat-header-text: #ffffff;
     --chat-header-status: rgba(255, 255, 255, 0.85);
-    --chat-bg: #efeae2;
+    --chat-bg: #fefdf9;
     --chat-bg-image: none;
     --chat-bg-size: auto;
     --chat-sent: #d9fdd3;
@@ -18,18 +18,20 @@
     --inside-bg: #faf8f5;
 }
 
-.card-page[data-platform="whatsapp"] {
+.card-page[data-platform="whatsapp"],
+.card-page[data-platform="auto"] {
     --chat-header-bg: #008069;
     --chat-sent: #d9fdd3;
     --chat-received: #ffffff;
-    --chat-bg: #efeae2;
+    --chat-bg: #fefdf9;
     --chat-bg-image: url("../img/whatsapp-wallpaper.png");
     --chat-bg-size: 100% auto;
     background-image: none;
-    background-color: #efeae2;
+    background-color: #fefdf9;
 }
 
-.card-page[data-platform="whatsapp"] .chat-body {
+.card-page[data-platform="whatsapp"] .chat-body,
+.card-page[data-platform="auto"] .chat-body {
     background-color: var(--chat-bg);
     background-image: var(--chat-bg-image);
     background-size: var(--chat-bg-size);
@@ -270,36 +272,94 @@
 .card-page-inside {
     flex: 1;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 1.2rem 1.5rem;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: stretch;
+    padding: 1.25rem 1.65rem;
     background: var(--inside-bg);
     color: #1a1a1a;
-    text-align: center;
     overflow: hidden;
+    min-height: 0;
 }
 
-.inside-content { max-width: 90%; width: 100%; }
+.inside-zone {
+    width: 100%;
+    max-width: 86%;
+    flex: 0 0 auto;
+}
+
+.inside-zone.align-left {
+    align-self: flex-start;
+    text-align: left;
+}
+
+.inside-zone.align-center {
+    align-self: center;
+    text-align: center;
+}
+
+.inside-zone.align-right {
+    align-self: flex-end;
+    text-align: right;
+}
+
+.inside-zone--middle {
+    flex: 1 1 auto;
+    display: flex;
+    min-height: 0;
+}
+
+.inside-zone--middle.align-left {
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
+.inside-zone--middle.align-center {
+    justify-content: center;
+    align-items: center;
+}
+
+.inside-zone--middle.align-right {
+    justify-content: flex-end;
+    align-items: flex-end;
+}
+
+.inside-zone.is-empty {
+    display: none;
+}
+
+.inside-zone--middle:not(.is-empty) {
+    display: flex;
+}
 
 .inside-message {
     margin: 0;
     line-height: 1.55;
     white-space: pre-wrap;
-    color: #1a1a1a;
+    width: 100%;
 }
 
-.inside-placeholder { margin: 0; color: #999; font-style: italic; }
+.inside-placeholder { margin: 0; opacity: 0.45; font-style: italic; }
 
-.font-classic .inside-message { font-family: Georgia, 'Times New Roman', serif; }
-.font-modern .inside-message { font-family: Inter, -apple-system, sans-serif; }
-.font-handwritten .inside-message { font-family: 'Caveat', cursive; }
-.font-elegant .inside-message { font-family: 'Playfair Display', Georgia, serif; }
-.font-typewriter .inside-message { font-family: 'Courier New', Courier, monospace; }
+.inside-zone.font-classic .inside-message,
+.inside-zone.font-classic .inside-placeholder { font-family: Georgia, 'Times New Roman', serif; }
+.inside-zone.font-modern .inside-message,
+.inside-zone.font-modern .inside-placeholder { font-family: Inter, -apple-system, sans-serif; }
+.inside-zone.font-handwritten .inside-message,
+.inside-zone.font-handwritten .inside-placeholder { font-family: 'Caveat', cursive; }
+.inside-zone.font-elegant .inside-message,
+.inside-zone.font-elegant .inside-placeholder { font-family: 'Playfair Display', Georgia, serif; }
+.inside-zone.font-typewriter .inside-message,
+.inside-zone.font-typewriter .inside-placeholder { font-family: 'Courier New', Courier, monospace; }
 
-.size-small .inside-message { font-size: 14px; }
-.size-medium .inside-message { font-size: 20px; }
-.size-large .inside-message { font-size: 28px; }
-.size-xlarge .inside-message { font-size: 36px; }
+.inside-zone.size-small .inside-message,
+.inside-zone.size-small .inside-placeholder { font-size: 14px; }
+.inside-zone.size-medium .inside-message,
+.inside-zone.size-medium .inside-placeholder { font-size: 20px; }
+.inside-zone.size-large .inside-message,
+.inside-zone.size-large .inside-placeholder { font-size: 28px; }
+.inside-zone.size-xlarge .inside-message,
+.inside-zone.size-xlarge .inside-placeholder { font-size: 36px; }
 
 .card-page-back {
     flex: 1;

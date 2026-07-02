@@ -97,6 +97,122 @@ INSIDE_FONT_SIZES = {
     "xlarge": {"id": "xlarge", "label": "Extra Large", "size": "36px"},
 }
 
+INSIDE_ZONE_IDS = ("top", "middle", "bottom")
+
+INSIDE_ALIGNMENTS = ("left", "center", "right")
+
+DEFAULT_ZONE_ALIGN = {
+    "top": "left",
+    "middle": "center",
+    "bottom": "center",
+}
+
+INSIDE_TEXT_COLORS = {
+    "charcoal": {"id": "charcoal", "label": "Charcoal", "hex": "#2d2a26"},
+    "ink": {"id": "ink", "label": "Ink black", "hex": "#1a1a1a"},
+    "rose": {"id": "rose", "label": "Dusty rose", "hex": "#8f4550"},
+    "burgundy": {"id": "burgundy", "label": "Burgundy", "hex": "#6b2d3a"},
+    "forest": {"id": "forest", "label": "Forest", "hex": "#2d4a3e"},
+    "navy": {"id": "navy", "label": "Navy", "hex": "#1e3a5f"},
+    "plum": {"id": "plum", "label": "Plum", "hex": "#5c3d5c"},
+    "gold": {"id": "gold", "label": "Warm gold", "hex": "#9a7b4f"},
+}
+
+DEFAULT_INSIDE_COLOR = "charcoal"
+
+DEFAULT_INSIDE_ZONE = {
+    "message": "",
+    "font": "classic",
+    "font_size": "medium",
+    "align": "center",
+    "color": DEFAULT_INSIDE_COLOR,
+}
+
+
+def inside_color_hex(color_id: str) -> str:
+    entry = INSIDE_TEXT_COLORS.get(color_id)
+    if entry:
+        return entry["hex"]
+    return INSIDE_TEXT_COLORS[DEFAULT_INSIDE_COLOR]["hex"]
+
+INSIDE_MESSAGE_PRESETS = [
+    {
+        "id": "favourite",
+        "label": "My favourite person",
+        "message": "Every message reminded me why you're my favourite person.",
+    },
+    {
+        "id": "thank_you",
+        "label": "Thank you for being you",
+        "message": "All these little messages add up to one big thank you for being you.",
+    },
+    {
+        "id": "with_love",
+        "label": "With all my love",
+        "message": "Happy birthday — with all my love, always.",
+    },
+    {
+        "id": "little_things",
+        "label": "The little things",
+        "message": "It's the little things you say that mean the most.",
+    },
+    {
+        "id": "keepsake",
+        "label": "A keepsake",
+        "message": "Turned our chats into something I can hold — because you matter.",
+    },
+    {
+        "id": "always",
+        "label": "Always & forever",
+        "message": "For every laugh, every late-night chat, and every 'love you' — always.",
+    },
+]
+
+
+def default_inside_zones() -> dict:
+    zones = {}
+    for zone_id in INSIDE_ZONE_IDS:
+        zone = dict(DEFAULT_INSIDE_ZONE)
+        zone["align"] = DEFAULT_ZONE_ALIGN[zone_id]
+        zones[zone_id] = zone
+    return zones
+
+
+def normalize_inside_zones(card_data: dict) -> dict:
+    """Return inside_zones dict, migrating legacy single-field cards."""
+    raw = card_data.get("inside_zones")
+    if isinstance(raw, dict) and all(z in raw for z in INSIDE_ZONE_IDS):
+        zones = default_inside_zones()
+        for zone_id in INSIDE_ZONE_IDS:
+            src = raw.get(zone_id) or {}
+            align = src.get("align")
+            if align not in INSIDE_ALIGNMENTS:
+                align = DEFAULT_ZONE_ALIGN[zone_id]
+            color = src.get("color")
+            if color not in INSIDE_TEXT_COLORS:
+                color = DEFAULT_INSIDE_COLOR
+            zones[zone_id] = {
+                "message": str(src.get("message") or ""),
+                "font": src.get("font") if src.get("font") in INSIDE_FONTS else "classic",
+                "font_size": src.get("font_size") if src.get("font_size") in INSIDE_FONT_SIZES else "medium",
+                "align": align,
+                "color": color,
+            }
+        return zones
+
+    zones = default_inside_zones()
+    legacy_msg = card_data.get("inside_message") or ""
+    if legacy_msg:
+        zones["middle"] = {
+            "message": legacy_msg,
+            "font": card_data.get("inside_font") if card_data.get("inside_font") in INSIDE_FONTS else "classic",
+            "font_size": card_data.get("inside_font_size") if card_data.get("inside_font_size") in INSIDE_FONT_SIZES else "medium",
+            "align": DEFAULT_ZONE_ALIGN["middle"],
+            "color": DEFAULT_INSIDE_COLOR,
+        }
+    return zones
+
+
 DEFAULT_SLIDE_CAPTIONS = [
     "Every message tells your story…",
     "The things you love, together",

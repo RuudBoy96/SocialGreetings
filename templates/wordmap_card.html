@@ -51,7 +51,7 @@
                             {% call card_3d_wrapper() %}
                             <div class="card-page orientation-{{ card.orientation|default('portrait') }}"
                                  data-platform="{{ card.platform|default('whatsapp') }}">
-                                {{ card_inside(card.inside_message|default(''), card.inside_font|default('classic'), card.inside_font_size|default('medium')) }}
+                                {{ card_inside(card.inside_zones|default({})) }}
                             </div>
                             {% endcall %}
                         </div>
@@ -70,11 +70,10 @@
 
             {{ carousel_controls() }}
             {{ inside_editor_panel(
-                card.inside_message|default(''),
-                card.inside_font|default('classic'),
-                card.inside_font_size|default('medium'),
+                card.inside_zones|default({"top": {"message": "", "font": "classic", "font_size": "medium"}, "middle": {"message": "", "font": "classic", "font_size": "medium"}, "bottom": {"message": "", "font": "classic", "font_size": "medium"}}),
                 inside_fonts,
-                inside_font_sizes
+                inside_font_sizes,
+                inside_text_colors
             ) }}
         </div>
     </div>
