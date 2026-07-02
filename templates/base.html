@@ -18,12 +18,11 @@
             SocialGreetings
         </a>
         <div class="nav-links">
+            <a href="{{ url_for('privacy') }}">Privacy</a>
+            <a href="{{ url_for('faq') }}">FAQ</a>
             <a href="{{ url_for('landing') }}#how-it-works">How it works</a>
             <a href="{{ url_for('how_to_export') }}">How to export</a>
-            <a href="{{ url_for('create_love') }}">Love card</a>
-            <a href="{{ url_for('create_stats') }}">Stats card</a>
-            <a href="{{ url_for('create_wordmap') }}">Word map</a>
-            <a href="{{ url_for('create_hub') }}" class="btn btn-primary btn-sm">Create</a>
+            <a href="{{ url_for('create') }}" class="btn btn-primary btn-sm">Create</a>
         </div>
     </nav>
 
@@ -40,8 +39,12 @@
     {% block content %}{% endblock %}
 
     <footer class="footer">
+        <div class="footer-links">
+            <a href="{{ url_for('privacy') }}">Privacy</a>
+            <a href="{{ url_for('faq') }}">FAQ</a>
+            <a href="{{ url_for('landing') }}#how-it-works">How it works</a>
+        </div>
         <p>&copy; 2026 SocialGreetings — Turn your conversations into keepsakes.</p>
-        <p class="footer-links"><a href="{{ url_for('privacy') }}">Privacy &amp; security</a></p>
     </footer>
     {% block extra_js %}{% endblock %}
 </body>

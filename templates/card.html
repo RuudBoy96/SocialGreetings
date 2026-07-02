@@ -1,228 +1,153 @@
 {% extends "base.html" %}
 
 {% from "macros/chat_header.html" import chat_header, card_back_logo, card_inside %}
-
 {% from "macros/carousel.html" import carousel_controls, inside_editor_panel %}
-
 {% from "macros/preview_ui.html" import card_3d_wrapper %}
 
-
-
-{% block title %}Your card — SocialGreetings{% endblock %}
+{% block title %}Your Love Messages card — SocialGreetings{% endblock %}
 
 {% block extra_head %}<meta name="card-id" content="{{ card.card_id }}">{% endblock %}
 
-
-
 {% block extra_css %}
-
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Playfair+Display:ital@0;1&display=swap" rel="stylesheet">
-
 <link rel="stylesheet" href="{{ url_for('static', filename='css/card.css') }}">
-
 <link rel="stylesheet" href="{{ url_for('static', filename='css/themes.css') }}">
-
 <link rel="stylesheet" href="{{ url_for('static', filename='css/presenter.css') }}">
-
 <link rel="stylesheet" href="{{ url_for('static', filename='css/print.css') }}">
-
 {% endblock %}
-
-
 
 {% block content %}
-
 <section class="card-viewer">
-
     <div class="card-toolbar no-print">
-
         <div class="card-stats">
-
             <strong>{{ card.total_count }}</strong> messages
-
             · {{ card.platform|default('whatsapp')|title }}
-
             · {{ card.orientation|default('portrait')|title }}
-
         </div>
-
         <div class="card-actions">
-
-            <a href="{{ url_for('create_hub') }}" class="btn btn-ghost btn-sm">New card</a>
-
-            <button type="button" onclick="window.print()" class="btn btn-ghost btn-sm">Download PDF</button>
-
-            <button type="button" data-delete-card class="btn btn-ghost btn-sm">Delete now</button>
-
+            <span class="expiry-countdown" id="expiry-countdown" data-expires="{{ card.expires_at|default('') }}"></span>
+            <button type="button" data-delete-card class="btn btn-ghost btn-sm btn-danger">Delete now</button>
+            <a href="{{ url_for('create') }}" class="btn btn-ghost btn-sm">New card</a>
+            <a href="{{ url_for('card_pdf', card_id=card.card_id) }}" class="btn btn-ghost btn-sm">Download PDF</a>
             <a href="{{ url_for('order_card', card_id=card.card_id) }}" class="btn btn-primary btn-sm">Order now</a>
-
         </div>
-
     </div>
 
-
+    <p class="card-privacy-note no-print">
+        Your card link is private. Data auto-deletes after 30 minutes of inactivity.
+        <a href="{{ url_for('privacy') }}">Privacy policy</a>
+    </p>
 
     <div class="presenter-layout">
-
         <div class="presenter-main">
-
             <div class="presenter-stage">
-
                 <div class="carousel-viewport" id="carousel-viewport">
-
                     <div class="carousel-track" id="carousel-track">
-
                         <div class="carousel-slide" data-slide-type="front">
-
                             {% call card_3d_wrapper() %}
-
                             <div class="card-page orientation-{{ card.orientation|default('portrait') }}"
-
                                  data-platform="{{ card.platform|default('whatsapp') }}">
-
                                 {{ chat_header(card.platform|default('whatsapp'), card.contact_name) }}
-
                                 <div class="chat-body collage-body" id="chat-page-1"></div>
-
                             </div>
-
                             {% endcall %}
-
                         </div>
-
-
 
                         <div class="carousel-slide carousel-slide--optional" id="carousel-slide-2" data-slide-type="front2">
-
                             {% call card_3d_wrapper() %}
-
                             <div class="card-page orientation-{{ card.orientation|default('portrait') }}"
-
                                  data-platform="{{ card.platform|default('whatsapp') }}">
-
                                 {{ chat_header(card.platform|default('whatsapp'), card.contact_name) }}
-
                                 <div class="chat-body collage-body" id="chat-page-2"></div>
-
                             </div>
-
                             {% endcall %}
-
                         </div>
-
-
 
                         <div class="carousel-slide" data-slide-type="inside">
-
                             {% call card_3d_wrapper() %}
-
                             <div class="card-page orientation-{{ card.orientation|default('portrait') }}"
-
                                  data-platform="{{ card.platform|default('whatsapp') }}">
-
                                 {{ card_inside(card.inside_message|default(''), card.inside_font|default('classic'), card.inside_font_size|default('medium')) }}
-
                             </div>
-
                             {% endcall %}
-
                         </div>
-
-
 
                         <div class="carousel-slide" data-slide-type="back">
-
                             {% call card_3d_wrapper() %}
-
                             <div class="card-page orientation-{{ card.orientation|default('portrait') }}"
-
                                  data-platform="{{ card.platform|default('whatsapp') }}">
-
                                 {{ card_back_logo() }}
-
                             </div>
-
                             {% endcall %}
-
                         </div>
-
                     </div>
-
                 </div>
-
             </div>
 
-
-
             {{ carousel_controls() }}
-
             {{ inside_editor_panel(
-
                 card.inside_message|default(''),
-
                 card.inside_font|default('classic'),
-
                 card.inside_font_size|default('medium'),
-
                 inside_fonts,
-
                 inside_font_sizes
-
             ) }}
 
+            <div class="preview-bottom-ctas no-print">
+                <a href="{{ url_for('card_pdf', card_id=card.card_id) }}" class="btn btn-ghost btn-lg">Download PDF</a>
+                <a href="{{ url_for('order_card', card_id=card.card_id) }}" class="btn btn-primary btn-lg">Order now</a>
+            </div>
         </div>
-
     </div>
-
 </section>
 
-
-
 <script id="card-data" type="application/json">{{ card | tojson }}</script>
-
 {% endblock %}
 
-
-
 {% block extra_js %}
-
 <script src="{{ url_for('static', filename='js/card.js') }}"></script>
-
 <script src="{{ url_for('static', filename='js/presenter.js') }}"></script>
-
 <script src="{{ url_for('static', filename='js/card_session.js') }}"></script>
-
 <script>
-
 function initCardCarousel() {
-
     if (window._cardCarousel) return;
-
     const cardData = JSON.parse(document.getElementById('card-data').textContent);
-
     window._cardCarousel = new CardCarousel({ cardId: cardData.card_id });
 
-    const _params = new URLSearchParams(window.location.search);
-
-    if (_params.get('print') === '1' || _params.get('pdf') === '1') {
-
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('print') === '1' || params.get('pdf') === '1') {
         document.body.classList.toggle('print-landscape', cardData.orientation === 'landscape');
-
-        if (_params.get('print') === '1') setTimeout(() => window.print(), 800);
-
+        if (params.get('print') === '1') {
+            document.addEventListener('card-render-complete', () => {
+                setTimeout(() => window.print(), 400);
+            }, { once: true });
+        }
     }
-
 }
 
 document.addEventListener('card-render-complete', initCardCarousel, { once: true });
-
 document.addEventListener('DOMContentLoaded', () => {
-
     setTimeout(() => initCardCarousel(), 50);
-
 });
 
+(function initExpiry() {
+    const el = document.getElementById('expiry-countdown');
+    const expiresRaw = el?.dataset.expires;
+    if (!el || !expiresRaw) return;
+
+    function tick() {
+        const expires = new Date(expiresRaw);
+        const diff = expires - Date.now();
+        if (diff <= 0) {
+            el.textContent = 'Expired';
+            return;
+        }
+        const mins = Math.floor(diff / 60000);
+        const secs = Math.floor((diff % 60000) / 1000);
+        el.textContent = `Deletes in ${mins}:${secs.toString().padStart(2, '0')}`;
+        setTimeout(tick, 1000);
+    }
+    tick();
+})();
 </script>
-
 {% endblock %}
-

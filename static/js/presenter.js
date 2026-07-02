@@ -4,8 +4,6 @@ const INSIDE_SIZE_CLASSES = ['size-small', 'size-medium', 'size-large', 'size-xl
 const SLIDE_LABELS = {
     front: 'Front cover',
     front2: 'Page 2',
-    stats: 'Stats',
-    wordmap: 'Word map',
     inside: 'Inside message',
     back: 'Back cover',
 };
@@ -30,6 +28,7 @@ class CardCarousel {
         this.current = 0;
         this.touchStartX = 0;
         this.slides = [];
+        this._refitTimer = null;
 
         this.refreshSlides();
         this.bindControls();
@@ -141,15 +140,14 @@ class CardCarousel {
         return SLIDE_LABELS[type] || 'Page';
     }
 
-    update3dTilt(index) {
+    updateFlatTilt(index) {
         this.slides.forEach((slide, i) => {
-            const wrapper = slide.querySelector('.card-3d-wrapper');
+            const wrapper = slide.querySelector('.card-flat-wrapper');
             if (!wrapper) return;
-            wrapper.classList.remove('tilt-right', 'tilt-center');
-            if (i !== index) return;
-            const type = slide.dataset.slideType;
-            if (type === 'inside') wrapper.classList.add('tilt-center');
-            else if (index % 2 === 1) wrapper.classList.add('tilt-right');
+            wrapper.classList.remove('tilt-open');
+            if (i === index && slide.dataset.slideType === 'inside') {
+                wrapper.classList.add('tilt-open');
+            }
         });
     }
 
@@ -186,9 +184,14 @@ class CardCarousel {
 
         const onInside = this.slides[index]?.dataset.slideType === 'inside';
         this.insidePanel?.classList.toggle('is-highlight', onInside);
-        this.update3dTilt(index);
-        this.updateStackPeek(index);
-        this.refitVisibleChatPages(index);
+        this.updateFlatTilt(index);
+        this.updateEdgeSliver(index);
+        this.scheduleRefit(index);
+    }
+
+    scheduleRefit(index) {
+        clearTimeout(this._refitTimer);
+        this._refitTimer = setTimeout(() => this.refitVisibleChatPages(index), 80);
     }
 
     refitVisibleChatPages(index) {
@@ -207,10 +210,10 @@ class CardCarousel {
         }
     }
 
-    updateStackPeek(index) {
-        document.querySelectorAll('.card-3d-scene').forEach((scene) => {
-            const prevPeek = scene.querySelector('[data-peek="prev"]');
-            const nextPeek = scene.querySelector('[data-peek="next"]');
+    updateEdgeSliver(index) {
+        document.querySelectorAll('.card-flat-scene').forEach((scene) => {
+            const prevSliver = scene.querySelector('[data-peek="prev"]');
+            const nextSliver = scene.querySelector('[data-peek="next"]');
             const sceneSlide = scene.closest('.carousel-slide');
             const slideIndex = this.slides.indexOf(sceneSlide);
             if (slideIndex < 0) return;
@@ -218,20 +221,8 @@ class CardCarousel {
             const showPrev = slideIndex === index && index > 0;
             const showNext = slideIndex === index && index < this.slides.length - 1;
 
-            if (prevPeek) {
-                prevPeek.classList.toggle('is-visible', showPrev);
-                const label = prevPeek.querySelector('.card-stack-peek-label');
-                if (label && showPrev) {
-                    label.textContent = this.getSlideLabel(this.slides[index - 1]);
-                }
-            }
-            if (nextPeek) {
-                nextPeek.classList.toggle('is-visible', showNext);
-                const label = nextPeek.querySelector('.card-stack-peek-label');
-                if (label && showNext) {
-                    label.textContent = this.getSlideLabel(this.slides[index + 1]);
-                }
-            }
+            if (prevSliver) prevSliver.classList.toggle('is-visible', showPrev);
+            if (nextSliver) nextSliver.classList.toggle('is-visible', showNext);
         });
     }
 

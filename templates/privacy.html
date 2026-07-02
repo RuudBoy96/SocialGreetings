@@ -1,53 +1,92 @@
 {% extends "base.html" %}
 
-{% block title %}Privacy &amp; Security — SocialGreetings{% endblock %}
+{% block title %}Privacy Policy — SocialGreetings{% endblock %}
 
 {% block content %}
-<section class="legal-page">
-    <div class="legal-header">
-        <div class="hero-badge">🔒 Your messages are 100% secure</div>
-        <h1>Privacy &amp; security</h1>
-        <p>Your conversations are deeply personal. We built SocialGreetings so your messages
-            can never be stolen, sold, or seen by anyone but you.</p>
+<section class="content-page">
+    <div class="content-page-header">
+        <h1>Privacy Policy</h1>
+        <p class="content-updated">Last updated: 2 July 2026</p>
     </div>
 
-    <div class="legal-grid">
-        <div class="legal-card">
-            <h3>🗑️ Your chat file is deleted instantly</h3>
-            <p>The file you upload is processed in memory to build your card and then deleted
-                the moment your card is generated. We never keep your raw chat export.</p>
-        </div>
-        <div class="legal-card">
-            <h3>⏱️ Cards auto-delete after {{ retention_minutes }} minutes</h3>
-            <p>Your card stays available while you have it open. After {{ retention_minutes }}
-                minutes of inactivity it is permanently deleted — and you can delete it yourself
-                at any time with one click.</p>
-        </div>
-        <div class="legal-card">
-            <h3>🔐 Encrypted while it exists</h3>
-            <p>For the short time your card exists, its contents are encrypted at rest, so the
-                stored data is useless to anyone who should not have it.</p>
-        </div>
-        <div class="legal-card">
-            <h3>🔗 Private, unguessable links</h3>
-            <p>Every card lives behind a long, random link that can't be guessed or enumerated.
-                No account, email, or password required.</p>
-        </div>
-        <div class="legal-card">
-            <h3>🚫 Never sold, shared, or used for ads</h3>
-            <p>Your messages are used for one thing only — making your card. We don't sell or
-                share your data, and there are no third-party advertising trackers.</p>
-        </div>
-        <div class="legal-card">
-            <h3>🛡️ Secure by design</h3>
-            <p>Traffic is served with strict security headers and a content security policy, and
-                your message content is never sent to any outside service.</p>
-        </div>
-    </div>
+    <div class="content-body">
+        <p class="content-lead">
+            SocialGreetings helps you turn chat exports into printable greeting cards.
+            We take your privacy seriously — this page explains exactly what we do with your data.
+        </p>
 
-    <div class="legal-footer">
-        <a href="{{ url_for('create_hub') }}" class="btn btn-primary btn-lg">Create your card</a>
-        <a href="{{ url_for('landing') }}" class="btn btn-ghost btn-lg">Back home</a>
+        <h2>What we collect</h2>
+        <ul>
+            <li><strong>Chat export file</strong> — when you upload a .txt file from WhatsApp, iMessage, or Messenger.</li>
+            <li><strong>Processed card data</strong> — the love messages we extract, your chosen names, orientation, and any inside message you write on the preview page.</li>
+        </ul>
+
+        <h2>What we don't do</h2>
+        <ul>
+            <li>We do not sell, rent, or share your chat data with third parties for marketing.</li>
+            <li>We do not use your messages to train AI models.</li>
+            <li>We do not post your card or messages on social media.</li>
+            <li>We do not show advertising based on your uploads.</li>
+            <li>We do not require you to link your messaging accounts — you simply upload a file you exported yourself.</li>
+        </ul>
+
+        <h2>How long we keep your data</h2>
+        <ul>
+            <li><strong>Raw upload (.txt):</strong> deleted immediately after we process your chat and build your card.</li>
+            <li><strong>Card data:</strong> stored for <strong>{{ retention_minutes|default(30) }} minutes</strong> of inactivity, then automatically deleted. While your card page is open, a heartbeat keeps it alive.</li>
+            <li><strong>Delete now:</strong> you can remove your card data immediately from the card preview page at any time.</li>
+            <li><strong>Encrypted at rest:</strong> for the short time your card exists, its contents are encrypted on the server.</li>
+        </ul>
+        <p>
+            Closing your browser tab does not instantly delete your card — the inactivity timer and the Delete now button do.
+            See our <a href="{{ url_for('faq') }}">FAQ</a> for more detail.
+        </p>
+
+        <h2>Where your data lives</h2>
+        <p>
+            Card data is stored temporarily on the server running SocialGreetings.
+            This data is excluded from our public code repository and is never published to GitHub.
+        </p>
+
+        <h2>Who can see your card</h2>
+        <p>
+            Your card is accessible to anyone who has your unique preview link (a long, unguessable URL).
+            We recommend not sharing this link publicly if your messages are very personal.
+            There is no public gallery or search — only people with the link can view your card.
+        </p>
+
+        <h2>Your rights</h2>
+        <ul>
+            <li>Delete your data anytime using the <strong>Delete now</strong> button on your card preview.</li>
+            <li>No account is required — you don't need to log in to request deletion.</li>
+            <li>After deletion or expiry, your card data cannot be recovered.</li>
+        </ul>
+
+        <h2>Security</h2>
+        <ul>
+            <li>When deployed publicly, we use HTTPS to encrypt data in transit.</li>
+            <li>We do not store passwords (no accounts in the current version).</li>
+            <li>Processing happens on our server — your chat is not sent to external AI services.</li>
+            <li>Strict security headers and a content security policy protect the site.</li>
+        </ul>
+
+        <h2>Print partners</h2>
+        <p>
+            If you order a print, you download a PDF and upload it to a third-party print service (e.g. Prodigi, Printed.com, Gelato).
+            Those services have their own privacy policies. We do not automatically send your chat data to print partners —
+            only the PDF you choose to upload.
+        </p>
+
+        <h2>Contact</h2>
+        <p>
+            Questions about privacy? Email us at
+            <a href="mailto:privacy@socialgreetings.com">privacy@socialgreetings.com</a>.
+        </p>
+
+        <div class="content-actions">
+            <a href="{{ url_for('faq') }}" class="btn btn-ghost">Read the FAQ</a>
+            <a href="{{ url_for('create') }}" class="btn btn-primary">Create a card</a>
+        </div>
     </div>
 </section>
 {% endblock %}

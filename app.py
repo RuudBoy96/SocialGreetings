@@ -4,8 +4,8 @@ import json
 import os
 import secrets
 import time
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
-
 from urllib.parse import urljoin
 
 from cryptography.fernet import Fernet, InvalidToken
@@ -14,17 +14,7 @@ from werkzeug.utils import secure_filename
 
 from extractor import process_chat
 from parsers import detect_participants, extract_contact_name, parse_chat_export
-from platforms import (
-    DEFAULT_OCCASION,
-    DEFAULT_SLIDE_CAPTIONS,
-    INSIDE_FONTS,
-    INSIDE_FONT_SIZES,
-    OCCASIONS,
-    ORIENTATIONS,
-    PLATFORMS,
-)
-from stats import AVAILABLE_STATS, compute_stats
-from wordmap import compute_word_map
+from platforms import DEFAULT_SLIDE_CAPTIONS, INSIDE_FONTS, INSIDE_FONT_SIZES, ORIENTATIONS, PLATFORMS
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "socialgreetings-dev-key")
@@ -34,9 +24,6 @@ UPLOAD_DIR = BASE_DIR / "uploads"
 GENERATED_DIR = BASE_DIR / "generated"
 ALLOWED_EXTENSIONS = {"txt"}
 
-# Cards are deleted automatically after this much inactivity. Activity is tracked
-# via the stored file's modification time, which is bumped on every view/edit/print
-# and by a lightweight heartbeat while a card page is open in the browser.
 RETENTION_SECONDS = 30 * 60
 RETENTION_MINUTES = RETENTION_SECONDS // 60
 
@@ -45,8 +32,6 @@ GENERATED_DIR.mkdir(exist_ok=True)
 
 
 def _card_cipher() -> Fernet:
-    """Build a Fernet cipher from CARD_DATA_KEY (any string) so stored card data is
-    encrypted at rest. Falls back to the app secret for local development."""
     passphrase = os.environ.get("CARD_DATA_KEY") or app.secret_key or "socialgreetings-dev-key"
     key = base64.urlsafe_b64encode(hashlib.sha256(passphrase.encode("utf-8")).digest())
     return Fernet(key)
@@ -59,9 +44,11 @@ def allowed_file(filename: str) -> bool:
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
+def utc_now() -> datetime:
+    return datetime.now(timezone.utc)
+
+
 def render_card_pdf(page_url: str, orientation: str) -> bytes:
-    """Render a card page to a print-ready PDF using headless Chromium so the output
-    matches the on-screen card exactly (themes, fonts, layout)."""
     from playwright.sync_api import sync_playwright
 
     width, height = ("7in", "5in") if orientation == "landscape" else ("5in", "7in")
@@ -70,18 +57,12 @@ def render_card_pdf(page_url: str, orientation: str) -> bytes:
         try:
             page = browser.new_page()
             page.goto(page_url, wait_until="networkidle")
-            # Give the carousel/chat layout JS a moment to finish sizing the pages.
             page.wait_for_timeout(1200)
-            # Force the paper size for this orientation (the stylesheet's @page rule is
-            # fixed to portrait) and pin each card page to exactly one sheet so the 3D
-            # wrapper height never spills a card onto a second page.
             page.add_style_tag(content=(
                 f"@page {{ size: {width} {height}; margin: 0; }}"
-                ".card-3d-shadow, .card-stack-peek { display: none !important; }"
-                # Flatten every ancestor: any transform/perspective/overflow on a parent
-                # creates a containing block that stops CSS page-break fragmentation.
+                ".card-flat-shadow, .card-edge-sliver { display: none !important; }"
                 ".card-viewer, .presenter-layout, .presenter-main, .presenter-stage,"
-                " .carousel-viewport, .carousel-track, .card-3d-scene, .card-3d-wrapper {"
+                " .carousel-viewport, .carousel-track, .card-flat-scene, .card-flat-wrapper {"
                 " overflow: visible !important; transform: none !important;"
                 " perspective: none !important; height: auto !important; min-height: 0 !important;"
                 " display: block !important; padding: 0 !important; margin: 0 !important; }"
@@ -119,7 +100,7 @@ def _is_expired(path: Path) -> bool:
 def purge_expired_cards() -> None:
     for path in GENERATED_DIR.glob("*.json"):
         if _is_expired(path):
-            path.unlink(missing_ok=True)
+            delete_card_data(path.stem)
 
 
 def card_exists_and_fresh(card_id: str) -> bool:
@@ -127,7 +108,7 @@ def card_exists_and_fresh(card_id: str) -> bool:
     if not path.exists():
         return False
     if _is_expired(path):
-        path.unlink(missing_ok=True)
+        delete_card_data(card_id)
         return False
     return True
 
@@ -140,6 +121,8 @@ def touch_card(card_id: str) -> None:
 
 def delete_card_data(card_id: str) -> None:
     _card_path(card_id).unlink(missing_ok=True)
+    for orphan in UPLOAD_DIR.glob(f"{card_id}_*"):
+        orphan.unlink(missing_ok=True)
 
 
 def load_card_data(card_id: str) -> dict | None:
@@ -147,22 +130,38 @@ def load_card_data(card_id: str) -> dict | None:
     if not path.exists():
         return None
     if _is_expired(path):
-        path.unlink(missing_ok=True)
+        delete_card_data(card_id)
         return None
     try:
         token = path.read_bytes()
         raw = CARD_CIPHER.decrypt(token)
-        return json.loads(raw.decode("utf-8"))
+        data = json.loads(raw.decode("utf-8"))
     except (InvalidToken, ValueError, json.JSONDecodeError):
         return None
 
+    expires_raw = data.get("expires_at")
+    if expires_raw:
+        try:
+            expires = datetime.fromisoformat(expires_raw.replace("Z", "+00:00"))
+            if expires.tzinfo is None:
+                expires = expires.replace(tzinfo=timezone.utc)
+            if expires <= utc_now():
+                delete_card_data(card_id)
+                return None
+        except ValueError:
+            pass
+
+    return data
+
 
 def save_card_data(card_id: str, data: dict) -> None:
+    now = utc_now()
+    data.setdefault("created_at", now.isoformat())
+    data["expires_at"] = (now + timedelta(seconds=RETENTION_SECONDS)).isoformat()
     raw = json.dumps(data, ensure_ascii=False).encode("utf-8")
     _card_path(card_id).write_bytes(CARD_CIPHER.encrypt(raw))
 
 
-# Remove anything already expired when the server boots.
 purge_expired_cards()
 
 
@@ -206,36 +205,17 @@ def resolve_names(form, filename: str, participants: list[str], platform: str = 
 
 
 def extract_card_settings(form) -> dict:
-    platform = form.get("platform", "auto")
-    if platform not in PLATFORMS and platform != "auto":
-        platform = "auto"
-
     orientation = form.get("orientation", "portrait")
     if orientation not in ORIENTATIONS:
         orientation = "portrait"
 
-    inside_font = form.get("inside_font", "classic")
-    if inside_font not in INSIDE_FONTS:
-        inside_font = "classic"
-
-    inside_font_size = form.get("inside_font_size", "medium")
-    if inside_font_size not in INSIDE_FONT_SIZES:
-        inside_font_size = "medium"
-
-    occasion = form.get("occasion", DEFAULT_OCCASION)
-    if occasion not in OCCASIONS:
-        occasion = DEFAULT_OCCASION
-
-    slide_captions = list(OCCASIONS[occasion].get("captions") or DEFAULT_SLIDE_CAPTIONS)
-
     return {
-        "platform": platform,
+        "platform": "auto",
         "orientation": orientation,
-        "occasion": occasion,
-        "inside_message": form.get("inside_message", "").strip(),
-        "inside_font": inside_font,
-        "inside_font_size": inside_font_size,
-        "slide_captions": slide_captions,
+        "inside_message": "",
+        "inside_font": "classic",
+        "inside_font_size": "medium",
+        "slide_captions": list(DEFAULT_SLIDE_CAPTIONS),
     }
 
 
@@ -245,72 +225,75 @@ def handle_upload(form, file) -> tuple[str, Path, str, str, str]:
     upload_path = UPLOAD_DIR / f"{card_id}_{filename}"
     file.save(upload_path)
 
-    platform = form.get("platform", "auto")
-    messages, detected_platform = parse_chat_export(str(upload_path), platform)
-    resolved_platform = detected_platform if platform == "auto" else platform
-
+    messages, detected_platform = parse_chat_export(str(upload_path), "auto")
     participants = detect_participants(messages)
-    receiver_name, contact_name = resolve_names(form, filename, participants, resolved_platform)
-    return card_id, upload_path, receiver_name, contact_name, resolved_platform
+    receiver_name, contact_name = resolve_names(form, filename, participants, detected_platform)
+    return card_id, upload_path, receiver_name, contact_name, detected_platform
 
 
 @app.route("/")
 def landing():
-    return render_template("landing.html", stat_options=AVAILABLE_STATS, platforms=PLATFORMS)
+    return render_template("landing.html", platforms=PLATFORMS)
 
 
-@app.route("/create")
-def create_hub():
-    return render_template("create_hub.html")
+@app.route("/privacy")
+def privacy():
+    return render_template("privacy.html", retention_minutes=RETENTION_MINUTES)
 
 
-@app.route("/create/love", methods=["GET", "POST"])
-def create_love():
+@app.route("/faq")
+def faq():
+    return render_template("faq.html")
+
+
+@app.route("/how-to-export")
+def how_to_export():
+    return render_template("how_to_export.html", platforms=PLATFORMS)
+
+
+@app.route("/create", methods=["GET", "POST"])
+def create():
     if request.method == "GET":
         return render_template(
             "create.html",
             platforms=PLATFORMS,
             orientations=ORIENTATIONS,
-            occasions=OCCASIONS,
-            inside_fonts=INSIDE_FONTS,
-            inside_font_sizes=INSIDE_FONT_SIZES,
         )
 
     if "chat_file" not in request.files:
         flash("Please choose a chat export file.", "error")
-        return redirect(url_for("create_love"))
+        return redirect(url_for("create"))
 
     file = request.files["chat_file"]
     if not file or file.filename == "":
         flash("Please choose a chat export file.", "error")
-        return redirect(url_for("create_love"))
+        return redirect(url_for("create"))
 
     if not allowed_file(file.filename):
         flash("Only .txt chat export files are supported.", "error")
-        return redirect(url_for("create_love"))
+        return redirect(url_for("create"))
 
     card_id, upload_path, receiver_name, contact_name, platform = handle_upload(request.form, file)
     settings = extract_card_settings(request.form)
 
     try:
-        split_pages = request.form.get("split_pages") == "on"
         card_data = process_chat(
             str(upload_path),
             receiver_name=receiver_name,
             contact_name=contact_name,
-            platform=settings["platform"],
+            platform="auto",
         )
         card_data.update(settings)
         card_data["platform"] = card_data.get("platform") or platform
         card_data["card_id"] = card_id
         card_data["card_type"] = "love"
-        card_data["split_pages"] = split_pages
+        card_data["split_pages"] = False
         card_data["original_filename"] = secure_filename(file.filename)
 
         if not card_data["messages"]:
             flash("No matching messages found. Try a chat with more 'love' messages.", "error")
             upload_path.unlink(missing_ok=True)
-            return redirect(url_for("create_love"))
+            return redirect(url_for("create"))
 
         save_card_data(card_id, card_data)
         upload_path.unlink(missing_ok=True)
@@ -319,168 +302,23 @@ def create_love():
     except Exception as exc:
         upload_path.unlink(missing_ok=True)
         flash(f"Could not process chat file: {exc}", "error")
-        return redirect(url_for("create_love"))
+        return redirect(url_for("create"))
 
 
-@app.route("/create/stats", methods=["GET", "POST"])
-def create_stats():
-    if request.method == "GET":
-        return render_template(
-            "create_stats.html",
-            stat_options=AVAILABLE_STATS,
-            platforms=PLATFORMS,
-            orientations=ORIENTATIONS,
-            occasions=OCCASIONS,
-            inside_fonts=INSIDE_FONTS,
-            inside_font_sizes=INSIDE_FONT_SIZES,
-        )
-
-    if "chat_file" not in request.files:
-        flash("Please choose a chat export file.", "error")
-        return redirect(url_for("create_stats"))
-
-    file = request.files["chat_file"]
-    if not file or file.filename == "":
-        flash("Please choose a chat export file.", "error")
-        return redirect(url_for("create_stats"))
-
-    if not allowed_file(file.filename):
-        flash("Only .txt chat export files are supported.", "error")
-        return redirect(url_for("create_stats"))
-
-    card_id, upload_path, receiver_name, contact_name, platform = handle_upload(request.form, file)
-    settings = extract_card_settings(request.form)
-
-    try:
-        selected = request.form.getlist("stat_options")
-        if not selected:
-            selected = [s["id"] for s in AVAILABLE_STATS.values() if s["default"]]
-
-        card_data = compute_stats(
-            str(upload_path),
-            receiver_name=receiver_name,
-            contact_name=contact_name,
-            selected_stats=selected,
-            platform=settings["platform"],
-        )
-        card_data.update(settings)
-        card_data["platform"] = card_data.get("platform") or platform
-        card_data["card_id"] = card_id
-        card_data["original_filename"] = secure_filename(file.filename)
-
-        save_card_data(card_id, card_data)
-        upload_path.unlink(missing_ok=True)
-        return redirect(url_for("view_stats_card", card_id=card_id))
-
-    except Exception as exc:
-        upload_path.unlink(missing_ok=True)
-        flash(f"Could not process chat file: {exc}", "error")
-        return redirect(url_for("create_stats"))
-
-
-@app.route("/create/wordmap", methods=["GET", "POST"])
-def create_wordmap():
-    if request.method == "GET":
-        return render_template(
-            "create_wordmap.html",
-            platforms=PLATFORMS,
-            orientations=ORIENTATIONS,
-            occasions=OCCASIONS,
-            inside_fonts=INSIDE_FONTS,
-            inside_font_sizes=INSIDE_FONT_SIZES,
-        )
-
-    if "chat_file" not in request.files:
-        flash("Please choose a chat export file.", "error")
-        return redirect(url_for("create_wordmap"))
-
-    file = request.files["chat_file"]
-    if not file or file.filename == "":
-        flash("Please choose a chat export file.", "error")
-        return redirect(url_for("create_wordmap"))
-
-    if not allowed_file(file.filename):
-        flash("Only .txt chat export files are supported.", "error")
-        return redirect(url_for("create_wordmap"))
-
-    card_id, upload_path, receiver_name, contact_name, platform = handle_upload(request.form, file)
-    settings = extract_card_settings(request.form)
-
-    try:
-        card_data = compute_word_map(
-            str(upload_path),
-            receiver_name=receiver_name,
-            contact_name=contact_name,
-            platform=settings["platform"],
-        )
-        card_data.update(settings)
-        card_data["platform"] = card_data.get("platform") or platform
-        card_data["card_id"] = card_id
-        card_data["original_filename"] = secure_filename(file.filename)
-
-        if not card_data["cloud_words"]:
-            flash("Not enough text to build a word map. Try a longer chat export.", "error")
-            upload_path.unlink(missing_ok=True)
-            return redirect(url_for("create_wordmap"))
-
-        save_card_data(card_id, card_data)
-        upload_path.unlink(missing_ok=True)
-        return redirect(url_for("view_wordmap_card", card_id=card_id))
-
-    except Exception as exc:
-        upload_path.unlink(missing_ok=True)
-        flash(f"Could not process chat file: {exc}", "error")
-        return redirect(url_for("create_wordmap"))
+@app.route("/create/love")
+def create_love_redirect():
+    return redirect(url_for("create"))
 
 
 @app.route("/card/<card_id>")
 def view_card(card_id: str):
     card_data = load_card_data(card_id)
     if not card_data:
-        flash("Card not found. Please create a new one.", "error")
-        return redirect(url_for("create_hub"))
+        flash("Card not found or expired. Please create a new one.", "error")
+        return redirect(url_for("create"))
     touch_card(card_id)
-    card_type = card_data.get("card_type")
-    if card_type == "stats":
-        return redirect(url_for("view_stats_card", card_id=card_id))
-    if card_type == "wordmap":
-        return redirect(url_for("view_wordmap_card", card_id=card_id))
     return render_template(
         "card.html",
-        card=card_data,
-        inside_fonts=INSIDE_FONTS,
-        inside_font_sizes=INSIDE_FONT_SIZES,
-    )
-
-
-@app.route("/stats/<card_id>")
-def view_stats_card(card_id: str):
-    card_data = load_card_data(card_id)
-    if not card_data:
-        flash("Stats card not found. Please create a new one.", "error")
-        return redirect(url_for("create_stats"))
-    touch_card(card_id)
-    if card_data.get("card_type") != "stats":
-        return redirect(url_for("view_card", card_id=card_id))
-    return render_template(
-        "stats_card.html",
-        card=card_data,
-        inside_fonts=INSIDE_FONTS,
-        inside_font_sizes=INSIDE_FONT_SIZES,
-    )
-
-
-@app.route("/wordmap/<card_id>")
-def view_wordmap_card(card_id: str):
-    card_data = load_card_data(card_id)
-    if not card_data:
-        flash("Word map card not found. Please create a new one.", "error")
-        return redirect(url_for("create_wordmap"))
-    touch_card(card_id)
-    if card_data.get("card_type") != "wordmap":
-        return redirect(url_for("view_card", card_id=card_id))
-    return render_template(
-        "wordmap_card.html",
         card=card_data,
         inside_fonts=INSIDE_FONTS,
         inside_font_sizes=INSIDE_FONT_SIZES,
@@ -491,7 +329,7 @@ def view_wordmap_card(card_id: str):
 def order_card(card_id: str):
     card_data = load_card_data(card_id)
     if not card_data:
-        flash("Card not found.", "error")
+        flash("Card not found or expired.", "error")
         return redirect(url_for("landing"))
     touch_card(card_id)
 
@@ -500,7 +338,7 @@ def order_card(card_id: str):
     dim_str = f"{dims['width']} × {dims['height']}"
 
     page_count = 3
-    if card_data.get("card_type") != "stats" and card_data.get("split_pages"):
+    if card_data.get("split_pages"):
         things = card_data.get("things", [])
         each_other = card_data.get("each_other", [])
         if things and each_other:
@@ -522,9 +360,7 @@ def card_pdf(card_id: str):
         return redirect(url_for("landing"))
     touch_card(card_id)
 
-    card_type = card_data.get("card_type")
-    endpoint = {"stats": "view_stats_card", "wordmap": "view_wordmap_card"}.get(card_type, "view_card")
-    page_url = urljoin(request.host_url, url_for(endpoint, card_id=card_id)) + "?pdf=1"
+    page_url = urljoin(request.host_url, url_for("view_card", card_id=card_id)) + "?pdf=1"
     orientation = card_data.get("orientation", "portrait")
 
     try:
@@ -534,7 +370,7 @@ def card_pdf(card_id: str):
         flash("Sorry, we couldn't generate the print PDF just now. Please try again.", "error")
         return redirect(url_for("order_card", card_id=card_id))
 
-    filename = f"socialgreetings-{card_type or 'love'}-card.pdf"
+    filename = "socialgreetings-love-card.pdf"
     return Response(
         pdf_bytes,
         mimetype="application/pdf",
@@ -559,12 +395,20 @@ def update_card(card_id: str):
         card_data["inside_font_size"] = payload["inside_font_size"]
 
     save_card_data(card_id, card_data)
+    touch_card(card_id)
+    return jsonify({"ok": True, "expires_at": card_data.get("expires_at")})
+
+
+@app.route("/api/card/<card_id>", methods=["DELETE"])
+def api_delete_card(card_id: str):
+    if not load_card_data(card_id):
+        return jsonify({"error": "Not found"}), 404
+    delete_card_data(card_id)
     return jsonify({"ok": True})
 
 
 @app.route("/card/<card_id>/ping", methods=["POST"])
 def ping_card(card_id: str):
-    """Heartbeat from an open card page: keeps the card alive while it is being viewed."""
     if not card_exists_and_fresh(card_id):
         return jsonify({"ok": False}), 404
     touch_card(card_id)
@@ -573,22 +417,11 @@ def ping_card(card_id: str):
 
 @app.route("/card/<card_id>/delete", methods=["POST"])
 def delete_card(card_id: str):
-    """Let a user delete their card and all its data on demand."""
     delete_card_data(card_id)
     if request.headers.get("X-Requested-With") or request.is_json:
         return jsonify({"ok": True})
     flash("Your card and all its data have been deleted.", "success")
     return redirect(url_for("landing"))
-
-
-@app.route("/privacy")
-def privacy():
-    return render_template("privacy.html", retention_minutes=RETENTION_MINUTES)
-
-
-@app.route("/how-to-export")
-def how_to_export():
-    return render_template("how_to_export.html", platforms=PLATFORMS)
 
 
 @app.route("/api/preview-participants", methods=["POST"])
@@ -601,8 +434,7 @@ def preview_participants():
         return jsonify({"participants": [], "contact_name": "", "platform": "whatsapp"})
 
     try:
-        platform = request.form.get("platform", "auto")
-        messages, detected = parse_chat_export(file, platform)
+        messages, detected = parse_chat_export(file, "auto")
         participants = detect_participants(messages)
         contact_name = extract_contact_name(file.filename, detected) or ""
         return jsonify({

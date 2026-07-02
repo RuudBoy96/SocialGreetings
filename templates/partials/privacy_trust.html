@@ -1,0 +1,68 @@
+{% macro privacy_trust(compact=false) %}
+<section class="privacy-trust{% if compact %} privacy-trust--compact{% endif %}">
+    <div class="privacy-trust-inner">
+        {% if not compact %}
+        <h2>Your messages stay private</h2>
+        <p class="privacy-trust-intro">We built SocialGreetings for personal keepsakes — not data collection. Here's how we protect your chat.</p>
+        {% else %}
+        <p class="privacy-trust-compact-title"><strong>Your upload is private</strong></p>
+        {% endif %}
+
+        <ul class="privacy-pillars">
+            <li>
+                <span class="pillar-icon" aria-hidden="true">🔒</span>
+                <div>
+                    <strong>Never sold or shared</strong>
+                    <span>We don't monetise your chat data or use it for advertising.</span>
+                </div>
+            </li>
+            <li>
+                <span class="pillar-icon" aria-hidden="true">⏱️</span>
+                <div>
+                    <strong>Auto-deleted in 30 minutes</strong>
+                    <span>All card data is removed from our server automatically.</span>
+                </div>
+            </li>
+            <li>
+                <span class="pillar-icon" aria-hidden="true">🗑️</span>
+                <div>
+                    <strong>Delete anytime</strong>
+                    <span>Use "Delete now" on your card preview to remove data immediately.</span>
+                </div>
+            </li>
+            {% if not compact %}
+            <li>
+                <span class="pillar-icon" aria-hidden="true">👤</span>
+                <div>
+                    <strong>No account required</strong>
+                    <span>No linking to WhatsApp, iMessage, or Messenger — just upload a file.</span>
+                </div>
+            </li>
+            <li>
+                <span class="pillar-icon" aria-hidden="true">📄</span>
+                <div>
+                    <strong>Upload-only use</strong>
+                    <span>Your raw .txt file is deleted right after we build your card.</span>
+                </div>
+            </li>
+            <li>
+                <span class="pillar-icon" aria-hidden="true">🔗</span>
+                <div>
+                    <strong>Private link only</strong>
+                    <span>Your card is only accessible via your unique preview URL.</span>
+                </div>
+            </li>
+            {% endif %}
+        </ul>
+
+        {% if not compact %}
+        <p class="privacy-caveat">Closing your browser doesn't instantly delete your card — the 30-minute timer and Delete now button do.</p>
+        {% endif %}
+
+        <div class="privacy-trust-links">
+            <a href="{{ url_for('privacy') }}" class="btn btn-ghost btn-sm">Privacy Policy</a>
+            <a href="{{ url_for('faq') }}" class="btn btn-ghost btn-sm">FAQ</a>
+        </div>
+    </div>
+</section>
+{% endmacro %}

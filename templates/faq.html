@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}FAQ — SocialGreetings{% endblock %}
+
+{% block content %}
+<section class="content-page">
+    <div class="content-page-header">
+        <h1>Frequently asked questions</h1>
+        <p class="content-lead">Privacy, security, and how Love Messages cards work.</p>
+    </div>
+
+    <div class="faq-section">
+        <h2 class="faq-section-title">Privacy &amp; security</h2>
+
+        <details class="faq-item">
+            <summary>Is my WhatsApp chat safe when I upload it?</summary>
+            <p>
+                Yes — we treat your upload as private and temporary. Your .txt file is processed on our server to build your card,
+                then deleted immediately. The resulting card data is kept for 30 minutes and then auto-deleted.
+                You can also hit <strong>Delete now</strong> on your card preview to remove everything right away.
+                Read our full <a href="{{ url_for('privacy') }}">Privacy Policy</a>.
+            </p>
+        </details>
+
+        <details class="faq-item">
+            <summary>Do you store my messages permanently?</summary>
+            <p>
+                No. Card data is automatically deleted after 30 minutes. We do not keep a permanent archive of your chats.
+            </p>
+        </details>
+
+        <details class="faq-item">
+            <summary>What happens if I close the browser?</summary>
+            <p>
+                Your card data remains on our server until the 30-minute timer expires or you click Delete now.
+                Closing the browser does not trigger immediate deletion — use the Delete now button if you want to remove your data right away.
+            </p>
+        </details>
+
+        <details class="faq-item">
+            <summary>Can other people see my card?</summary>
+            <p>
+                Only if they have your unique preview link. There is no public gallery or search.
+                Treat the link like an unlisted URL — share it only with people you trust.
+            </p>
+        </details>
+
+        <details class="faq-item">
+            <summary>Do you share data with print partners?</summary>
+            <p>
+                No. When you order a print, you download a PDF and upload it yourself to a print service.
+                We do not automatically send your chat or card data to Printed.com, Prodigi, Gelato, or any other partner.
+            </p>
+        </details>
+
+        <details class="faq-item">
+            <summary>Are my chats sent to AI services?</summary>
+            <p>
+                No. Your chat export is processed locally on our server using our own code — we do not send your messages
+                to OpenAI or other third-party AI services.
+            </p>
+        </details>
+
+        <details class="faq-item">
+            <summary>Can I delete my data before 30 minutes?</summary>
+            <p>
+                Yes. On your card preview page, click <strong>Delete now</strong>. Your card data will be removed immediately
+                and the preview link will stop working.
+            </p>
+        </details>
+
+        <details class="faq-item">
+            <summary>What file types do you accept?</summary>
+            <p>
+                We accept .txt chat export files from WhatsApp, iMessage, and Messenger (without media).
+                We auto-detect which platform your export came from.
+            </p>
+        </details>
+    </div>
+
+    <div class="faq-section">
+        <h2 class="faq-section-title">Product</h2>
+
+        <details class="faq-item">
+            <summary>How do I export my chat from WhatsApp?</summary>
+            <p>
+                Open the chat → tap the contact name → Export chat → Without media.
+                Save the .txt file and upload it here.
+            </p>
+        </details>
+
+        <details class="faq-item">
+            <summary>How do I export from iMessage?</summary>
+            <p>
+                On Mac, use an export tool or copy messages to a .txt file. Common formats include
+                "iMessage Chat with [name].txt" — we auto-detect the format.
+            </p>
+        </details>
+
+        <details class="faq-item">
+            <summary>How do I export from Messenger?</summary>
+            <p>
+                In Messenger, go to your profile → Download your information → select Messages.
+                Upload the resulting .txt export file.
+            </p>
+        </details>
+
+        <details class="faq-item">
+            <summary>What is a Love Messages card?</summary>
+            <p>
+                A greeting card whose front pages are a collage of every message in your chat about things you love
+                and moments you share — styled like your real messaging app (WhatsApp, iMessage, or Messenger).
+            </p>
+        </details>
+
+        <details class="faq-item">
+            <summary>Can I edit the inside message after creating?</summary>
+            <p>
+                Yes. On the card preview page, use the inside message editor below the carousel.
+                Your changes update live and are saved when you click Save.
+            </p>
+        </details>
+    </div>
+
+    <div class="content-actions">
+        <a href="{{ url_for('privacy') }}" class="btn btn-ghost">Privacy Policy</a>
+        <a href="{{ url_for('create') }}" class="btn btn-primary">Create a card</a>
+    </div>
+</section>
+{% endblock %}

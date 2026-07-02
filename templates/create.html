@@ -1,50 +1,29 @@
 {% extends "base.html" %}
+{% from "partials/privacy_trust.html" import privacy_trust %}
 
-{% block title %}Create a card — SocialGreetings{% endblock %}
-
-{% block extra_css %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/export_guide.css') }}">
-{% endblock %}
+{% block title %}Create Love Messages card — SocialGreetings{% endblock %}
 
 {% block content %}
 <section class="create-page create-page-wide">
     <div class="create-header">
-        <div class="card-type-badge love-badge">💚 Love Card</div>
-        <h1>Create your love card</h1>
+        <div class="card-type-badge love-badge">💚 Love Messages</div>
+        <h1>Create your Love Messages card</h1>
         <p>Upload a chat export — we'll pack every love message into a themed collage card.</p>
     </div>
 
-    <form class="create-form" action="{{ url_for('create_love') }}" method="post" enctype="multipart/form-data" id="create-form">
+    {{ privacy_trust(compact=true) }}
+
+    <form class="create-form" action="{{ url_for('create') }}" method="post" enctype="multipart/form-data" id="create-form">
         <div class="upload-zone" id="upload-zone">
             <input type="file" name="chat_file" id="chat_file" accept=".txt" required>
             <div class="upload-icon">📄</div>
             <p class="upload-title">Drop your chat export here</p>
-            <p class="upload-hint">WhatsApp, iMessage, or Messenger — .txt files</p>
+            <p class="upload-hint">WhatsApp, iMessage, or Messenger — .txt files · we auto-detect the platform</p>
             <p class="upload-filename" id="upload-filename"></p>
         </div>
 
-        <p class="upload-trust">🔒 Your messages are 100% secure — your file is deleted the instant your card is made. <a href="{{ url_for('privacy') }}">How we protect you</a></p>
-
         <div class="form-section" id="options-section" hidden>
-            <h3>Occasion</h3>
-            <label for="occasion">What are you celebrating?</label>
-            <select name="occasion" id="occasion">
-                {% for key, o in occasions.items() %}
-                <option value="{{ o.id }}">{{ o.icon }} {{ o.label }}</option>
-                {% endfor %}
-            </select>
-            <p class="field-hint">We'll tailor the cover captions to the occasion.</p>
-
-            <h3 class="section-divider">Platform &amp; layout</h3>
-
-            <label for="platform">Messaging platform</label>
-            <select name="platform" id="platform">
-                <option value="auto">Auto-detect</option>
-                {% for key, p in platforms.items() %}
-                <option value="{{ p.id }}">{{ p.icon }} {{ p.name }}</option>
-                {% endfor %}
-            </select>
-            <p class="field-hint" id="platform-hint">We'll detect the format from your file.</p>
+            <h3>Layout &amp; personalise</h3>
 
             <label for="orientation">Card orientation</label>
             <select name="orientation" id="orientation">
@@ -53,8 +32,6 @@
                 {% endfor %}
             </select>
 
-            <h3 class="section-divider">Personalise</h3>
-
             <label for="card_for">Who is this card for?</label>
             <select name="card_for" id="card_for">
                 <option value="">Auto-detect from chat</option>
@@ -62,36 +39,6 @@
 
             <label for="contact_name">Contact name (chat header)</label>
             <input type="text" name="contact_name" id="contact_name" placeholder="e.g. Kim Butler">
-
-            <label class="checkbox-label">
-                <input type="checkbox" name="split_pages" id="split_pages">
-                Split onto two front pages when needed
-                <span class="checkbox-hint">Page 1: things you love · Page 2: loving each other</span>
-            </label>
-
-            <h3 class="section-divider">Inside message</h3>
-
-            <label for="inside_message">Your personal message (inside of card)</label>
-            <textarea name="inside_message" id="inside_message" rows="3" placeholder="Write something from the heart…"></textarea>
-
-            <div class="form-row">
-                <div>
-                    <label for="inside_font">Font style</label>
-                    <select name="inside_font" id="inside_font">
-                        {% for key, f in inside_fonts.items() %}
-                        <option value="{{ f.id }}">{{ f.label }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div>
-                    <label for="inside_font_size">Font size</label>
-                    <select name="inside_font_size" id="inside_font_size">
-                        {% for key, s in inside_font_sizes.items() %}
-                        <option value="{{ s.id }}" {% if s.id == 'medium' %}selected{% endif %}>{{ s.label }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
         </div>
 
         <button type="submit" class="btn btn-primary btn-lg btn-full" id="submit-btn" disabled>
@@ -99,11 +46,17 @@
         </button>
     </form>
 
-    {% include "partials/export_guide.html" %}
+    <div class="create-tips">
+        <h4>How to export your chat</h4>
+        <ul class="platform-tips">
+            {% for key, p in platforms.items() %}
+            <li><strong>{{ p.icon }} {{ p.name }}:</strong> {{ p.export_hint }}</li>
+            {% endfor %}
+        </ul>
+    </div>
 </section>
 {% endblock %}
 
 {% block extra_js %}
 <script src="{{ url_for('static', filename='js/create.js') }}"></script>
-<script src="{{ url_for('static', filename='js/export_guide.js') }}"></script>
 {% endblock %}

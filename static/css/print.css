@@ -1,18 +1,30 @@
-/* Print-optimised output for PDF download */
 @media print {
-    @page {
+    @page portrait-page {
         size: 5in 7in;
         margin: 0;
     }
 
-    body.print-landscape @page {
+    @page landscape-page {
         size: 7in 5in;
+        margin: 0;
     }
 
-    body {
+    html, body {
+        width: 100%;
+        height: 100%;
+        margin: 0 !important;
+        padding: 0 !important;
         background: white !important;
-        margin: 0;
-        padding: 0;
+    }
+
+    body:not(.print-landscape) .card-page,
+    body:not(.print-landscape) .carousel-slide .card-page {
+        page: portrait-page;
+    }
+
+    body.print-landscape .card-page,
+    body.print-landscape .carousel-slide .card-page {
+        page: landscape-page;
     }
 
     .navbar,
@@ -22,22 +34,41 @@
     .inside-editor-panel,
     .no-print,
     .flash-container,
-    .order-page-actions {
+    .order-page-actions,
+    .card-privacy-note,
+    .preview-bottom-ctas,
+    .card-flat-shadow,
+    .card-edge-sliver {
         display: none !important;
     }
 
     .card-viewer,
     .presenter-layout,
+    .presenter-main,
+    .presenter-stage,
     .presenter-main {
-        padding: 0;
-        margin: 0;
-        max-width: none;
+        padding: 0 !important;
+        margin: 0 !important;
+        max-width: none !important;
+        background: none !important;
+        border: none !important;
+    }
+
+    .card-flat-scene {
+        padding: 0 !important;
+        min-height: 0 !important;
+        perspective: none !important;
+    }
+
+    .card-flat-wrapper {
+        transform: none !important;
+        filter: none !important;
     }
 
     .carousel-viewport {
-        overflow: visible;
-        background: none;
-        padding: 0;
+        overflow: visible !important;
+        background: none !important;
+        padding: 0 !important;
     }
 
     .carousel-track {
@@ -48,10 +79,15 @@
     .carousel-slide {
         display: flex !important;
         justify-content: center;
+        align-items: center;
         page-break-after: always;
         break-after: page;
-        min-width: auto;
-        width: 100%;
+        width: 100% !important;
+        min-width: auto !important;
+        overflow: visible !important;
+        position: relative !important;
+        visibility: visible !important;
+        height: auto !important;
     }
 
     .carousel-slide--optional:not(.is-visible) {
@@ -63,10 +99,20 @@
         break-after: auto;
     }
 
-    .card-page,
-    .stats-card-page {
+    .card-page {
         box-shadow: none !important;
         border: none !important;
+        margin: 0 auto;
+    }
+
+    .card-page.orientation-portrait {
+        width: 5in !important;
+        height: 7in !important;
+    }
+
+    .card-page.orientation-landscape {
+        width: 7in !important;
+        height: 5in !important;
     }
 
     * {

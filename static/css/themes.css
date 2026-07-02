@@ -295,16 +295,13 @@
 
 .back-logo {
     position: absolute;
-    bottom: 14px;
-    right: 14px;
+    bottom: 22px;
+    right: 22px;
     opacity: 0.9;
 }
 
-.sg-logo { height: 22px; width: auto; display: block; }
+.sg-logo { height: 22px; width: auto; display: block; max-width: calc(100% - 44px); }
 
-.stats-card-page[data-platform="imessage"] .stat-tile.highlight { background: #e8f2ff; }
-.stats-card-page[data-platform="messenger"] .stat-tile.highlight { background: #e7f3ff; }
-.stats-card-page[data-platform="messenger"] .bar-fill,
-.stats-card-page[data-platform="messenger"] .trend-fill { background: #0084ff; }
-.stats-card-page[data-platform="imessage"] .bar-fill,
-.stats-card-page[data-platform="imessage"] .trend-fill { background: #007aff; }
+.card-page-back {
+    overflow: visible;
+}

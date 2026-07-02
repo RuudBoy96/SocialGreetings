@@ -45,23 +45,48 @@ function renderCard(cardData) {
         }
 
         const slidePage2 = document.getElementById('carousel-slide-2');
+        const page2El = document.getElementById('chat-page-2');
+
         if (slidePage2) {
             slidePage2.classList.add('is-visible');
         }
 
-        const page2El = document.getElementById('chat-page-2');
         if (page2El) {
+            prepareHiddenLayout(page2El);
             renderMessages('chat-page-2', page2Messages, receiverName);
             const page2Opts = {
                 startFontSize: page2Messages.length > page1Messages.length ? START_FONT_SIZE * 0.82 : START_FONT_SIZE * 0.9,
             };
-            fitChatPage(page2El, page2Opts);
+            shrinkToFit(page2El, page2Opts);
+            clearHiddenLayout(page2El);
         }
     }
 
     window.dispatchEvent(new CustomEvent('card-render-complete', {
         detail: { showPage2 },
     }));
+}
+
+function prepareHiddenLayout(chatBody) {
+    if (!chatBody) return;
+    chatBody.style.visibility = 'hidden';
+    chatBody.style.position = 'absolute';
+    chatBody.style.left = '0';
+    chatBody.style.right = '0';
+    chatBody.style.top = '0';
+    chatBody.style.height = chatBody.parentElement?.clientHeight
+        ? `${chatBody.parentElement.clientHeight - 50}px`
+        : '100%';
+}
+
+function clearHiddenLayout(chatBody) {
+    if (!chatBody) return;
+    chatBody.style.visibility = '';
+    chatBody.style.position = '';
+    chatBody.style.left = '';
+    chatBody.style.right = '';
+    chatBody.style.top = '';
+    chatBody.style.height = '';
 }
 
 function renderMessages(containerId, messages, receiverName) {
@@ -120,10 +145,6 @@ function shrinkToFit(chatBody, options = {}) {
 
 function fitChatPage(chatBody, options = {}) {
     shrinkToFit(chatBody, options);
-    requestAnimationFrame(() => {
-        shrinkToFit(chatBody, options);
-        requestAnimationFrame(() => shrinkToFit(chatBody, options));
-    });
 }
 
 window.refitChatPage = (chatBody, options = {}) => fitChatPage(chatBody, options);
@@ -133,4 +154,3 @@ function escapeHtml(text) {
     div.textContent = text;
     return div.innerHTML;
 }
-

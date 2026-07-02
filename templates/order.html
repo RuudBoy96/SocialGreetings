@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Order your card — SocialGreetings{% endblock %}
+{% block title %}Order your Love Messages card — SocialGreetings{% endblock %}
 
 {% block extra_head %}<meta name="card-id" content="{{ card.card_id }}">{% endblock %}
 
@@ -28,9 +28,42 @@
     margin: 0;
 }
 
+.order-steps {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.order-step {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    padding: 0.4rem 0.75rem;
+    background: var(--surface);
+    border-radius: 999px;
+    border: 1px solid rgba(61, 54, 50, 0.08);
+}
+
+.order-step-num {
+    display: inline-flex;
+    width: 20px;
+    height: 20px;
+    align-items: center;
+    justify-content: center;
+    background: var(--primary);
+    color: white;
+    border-radius: 50%;
+    font-size: 0.7rem;
+    font-weight: 700;
+}
+
 .order-summary {
     background: var(--surface);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(61, 54, 50, 0.08);
     border-radius: var(--radius);
     padding: 1.5rem;
     margin-bottom: 1.5rem;
@@ -64,7 +97,7 @@
 .inside-preview {
     margin-top: 1rem;
     padding-top: 1rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    border-top: 1px solid rgba(61, 54, 50, 0.08);
 }
 
 .inside-preview blockquote {
@@ -83,9 +116,10 @@
 }
 
 .order-specs,
-.print-partners {
+.print-partners,
+.privacy-note {
     background: var(--surface);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(61, 54, 50, 0.08);
     border-radius: var(--radius);
     padding: 1.5rem;
     margin-bottom: 1.5rem;
@@ -97,8 +131,7 @@
     font-size: 0.95rem;
 }
 
-.order-specs ul,
-.print-partners ul {
+.order-specs ul {
     margin: 0;
     padding-left: 1.2rem;
     color: var(--text-muted);
@@ -120,12 +153,17 @@
     padding: 0.75rem 1rem;
     background: var(--surface-2);
     border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(61, 54, 50, 0.06);
     transition: border-color 0.15s;
 }
 
 .partner-link:hover {
-    border-color: rgba(139, 92, 246, 0.35);
+    border-color: rgba(201, 123, 132, 0.35);
+}
+
+.partner-link--primary {
+    border-color: rgba(201, 123, 132, 0.45);
+    background: linear-gradient(135deg, rgba(201, 123, 132, 0.1), rgba(232, 165, 152, 0.08));
 }
 
 .partner-link strong {
@@ -135,6 +173,22 @@
 .partner-link span {
     font-size: 0.78rem;
     color: var(--text-muted);
+}
+
+.privacy-note {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    text-align: center;
+}
+
+.privacy-note a {
+    color: var(--primary);
+}
+
+.privacy-note [data-delete-card] {
+    display: inline-block;
+    margin-top: 0.6rem;
 }
 
 .order-footer-links {
@@ -153,8 +207,14 @@
 {% block content %}
 <section class="order-page">
     <div class="order-header">
-        <h1>Order your card</h1>
-        <p>Review your card details, download a print-ready PDF, then send it to a print service.</p>
+        <h1>Order your Love Messages card</h1>
+        <p>Download a print-ready PDF, then send it to a print service of your choice.</p>
+    </div>
+
+    <div class="order-steps">
+        <span class="order-step"><span class="order-step-num">1</span> Preview</span>
+        <span class="order-step"><span class="order-step-num">2</span> Download PDF</span>
+        <span class="order-step"><span class="order-step-num">3</span> Choose printer</span>
     </div>
 
     <div class="order-summary">
@@ -162,11 +222,7 @@
         <div class="summary-grid">
             <div class="summary-item">
                 <label>Card type</label>
-                <span>{% if card.card_type == 'stats' %}Stats card{% elif card.card_type == 'wordmap' %}Word map card{% else %}Love messages card{% endif %}</span>
-            </div>
-            <div class="summary-item">
-                <label>Occasion</label>
-                <span>{{ card.occasion|default('birthday')|title }}</span>
+                <span>Love Messages card</span>
             </div>
             <div class="summary-item">
                 <label>Platform theme</label>
@@ -180,22 +236,10 @@
                 <label>Pages</label>
                 <span>{{ page_count }} pages</span>
             </div>
-            {% if card.card_type == 'wordmap' %}
-            <div class="summary-item">
-                <label>Words analysed</label>
-                <span>{{ "{:,}".format(card.total_words|default(0)) }} · {{ "{:,}".format(card.unique_words|default(0)) }} unique</span>
-            </div>
-            {% elif card.card_type != 'stats' %}
             <div class="summary-item">
                 <label>Messages</label>
                 <span>{{ card.total_count }} packed</span>
             </div>
-            {% else %}
-            <div class="summary-item">
-                <label>Love-yous analysed</label>
-                <span>{{ card.total_love_you }}</span>
-            </div>
-            {% endif %}
             <div class="summary-item">
                 <label>For</label>
                 <span>{{ card.receiver_name }} · {{ card.contact_name }}</span>
@@ -211,13 +255,7 @@
 
     <div class="order-actions order-page-actions">
         <a href="{{ url_for('card_pdf', card_id=card.card_id) }}" class="btn btn-primary btn-lg btn-full">Download print-ready PDF</a>
-        {% if card.card_type == 'stats' %}
-        <a href="{{ url_for('view_stats_card', card_id=card.card_id) }}" class="btn btn-ghost btn-full">Back to preview</a>
-        {% elif card.card_type == 'wordmap' %}
-        <a href="{{ url_for('view_wordmap_card', card_id=card.card_id) }}" class="btn btn-ghost btn-full">Back to preview</a>
-        {% else %}
         <a href="{{ url_for('view_card', card_id=card.card_id) }}" class="btn btn-ghost btn-full">Back to preview</a>
-        {% endif %}
     </div>
 
     <div class="order-specs">
@@ -231,10 +269,9 @@
     </div>
 
     <div class="print-partners">
-        <h3>Send it to print — seamlessly</h3>
+        <h3>Send to a print service</h3>
         <p style="margin:0 0 0.75rem;font-size:0.85rem;color:var(--text-muted);">
-            Your PDF is print-ready at the exact card size. Send it to our recommended partner to
-            print &amp; deliver the full folded card:
+            Your PDF is print-ready at the exact card size. Send it to our recommended partner:
         </p>
         <a href="https://www.prodigi.com/products/cards/greeting-cards/" target="_blank" rel="noopener" class="partner-link partner-link--primary">
             <div>
@@ -263,7 +300,7 @@
     </div>
 
     <div class="privacy-note">
-        🔒 Your messages are 100% secure. Your chat file was deleted the moment this card was made,
+        Your messages are private. Your chat file was deleted the moment this card was made,
         this card is encrypted and auto-deletes after 30 minutes of inactivity, and you can remove it now.
         <a href="{{ url_for('privacy') }}">Learn more</a>.
         <button type="button" data-delete-card class="btn btn-ghost btn-sm">Delete my card now</button>
@@ -271,7 +308,7 @@
 
     <div class="order-footer-links">
         <a href="{{ url_for('landing') }}" class="btn btn-ghost btn-sm">Home</a>
-        <a href="{{ url_for('create_hub') }}" class="btn btn-ghost btn-sm">Create new card</a>
+        <a href="{{ url_for('create') }}" class="btn btn-ghost btn-sm">Create new card</a>
     </div>
 </section>
 {% endblock %}

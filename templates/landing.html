@@ -1,238 +1,83 @@
 {% extends "base.html" %}
+{% from "partials/privacy_trust.html" import privacy_trust %}
 
-
-
-{% block title %}SocialGreetings — Birthday &amp; anniversary cards from your chats{% endblock %}
-
-
+{% block title %}SocialGreetings — Love Messages cards{% endblock %}
 
 {% block extra_css %}
-
-<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Playfair+Display:ital@0;1&display=swap" rel="stylesheet">
-
-<link rel="stylesheet" href="{{ url_for('static', filename='css/card_film.css') }}">
-
+<link rel="stylesheet" href="{{ url_for('static', filename='css/hero-card.css') }}">
 {% endblock %}
-
-
 
 {% block content %}
-
 <section class="hero">
-
     <div class="hero-bg"></div>
-
     <div class="hero-content">
-
-        <div class="hero-badge">🎂 Birthdays &amp; 💞 anniversaries, made personal</div>
-
-        <h1>Their birthday.<br><span class="gradient-text">Your story, printed.</span></h1>
-
+        <div class="hero-badge">From your chats to wonderful</div>
+        <h1>Your love messages.<br><span class="gradient-text">Beautifully printed.</span></h1>
         <p class="hero-sub">
-
-            The most personal birthday or anniversary card for the people you love. Upload your
-
-            WhatsApp, iMessage, or Messenger history and we turn your real conversations into a
-
-            keepsake greeting card — packed with love messages, illustrated with stats, or mapped
-
-            as your shared vocabulary.
-
+            Upload your WhatsApp, iMessage, or Messenger history and turn every loving message
+            into a personalised greeting card — private, secure, and ready to print.
         </p>
-
         <div class="hero-actions">
-
-            <a href="{{ url_for('create_hub') }}" class="btn btn-primary btn-lg">Create a card</a>
-
-            <a href="{{ url_for('create_love') }}" class="btn btn-ghost btn-lg">Love messages</a>
-
-            <a href="{{ url_for('create_stats') }}" class="btn btn-ghost btn-lg">Stats card</a>
-
-            <a href="{{ url_for('create_wordmap') }}" class="btn btn-ghost btn-lg">Word map</a>
-
+            <a href="{{ url_for('create') }}" class="btn btn-primary btn-lg">Create Love Messages card</a>
+            <a href="{{ url_for('privacy') }}" class="btn btn-ghost btn-lg">How we protect your data</a>
         </div>
-
         <div class="social-proof">
-
             <div class="avatar-stack">
-
-                <span class="mini-avatar" style="background:#ff6b6b">K</span>
-
-                <span class="mini-avatar" style="background:#4ecdc4">C</span>
-
-                <span class="mini-avatar" style="background:#a78bfa">A</span>
-
+                <span class="mini-avatar" style="background:#c97b84">K</span>
+                <span class="mini-avatar" style="background:#8fa88a">C</span>
+                <span class="mini-avatar" style="background:#d4a574">A</span>
             </div>
-
-            <span>The keepsake card for birthdays &amp; anniversaries</span>
-
+            <span>Made for real conversations between real people</span>
         </div>
-
     </div>
-
     <div class="hero-preview">
-
-        {% include "partials/card_film.html" %}
-
+        {% include "partials/hero_card_demo.html" %}
     </div>
-
 </section>
 
-
-
-<section class="products">
-
-    <h2>Choose your card</h2>
-
-    <div class="product-cards">
-
-        <a href="{{ url_for('create_love') }}" class="product-card">
-
-            <div class="product-icon">💚</div>
-
-            <h3>Love Messages Card</h3>
-
-            <p>A dense collage of every message about things you love and moments you share — packed onto a themed chat card.</p>
-
-            <span class="product-cta">Create love card →</span>
-
-        </a>
-
-        <a href="{{ url_for('create_stats') }}" class="product-card product-card-alt">
-
-            <div class="product-icon">📊</div>
-
-            <h3>Chat Stats Card</h3>
-
-            <p>Beautiful infographics of your chat — how often you say love you, peak hours, trends over time, and more.</p>
-
-            <span class="product-cta">Create stats card →</span>
-
-        </a>
-
-        <a href="{{ url_for('create_wordmap') }}" class="product-card product-card-wordmap">
-
-            <div class="product-icon">☁️</div>
-
-            <h3>Word Map Card</h3>
-
-            <p>A constellation of the words you both use most — your shared language, visualised as a modern word cloud.</p>
-
-            <span class="product-cta">Create word map →</span>
-
-        </a>
-
-    </div>
-
-</section>
-
-
+{{ privacy_trust() }}
 
 <section class="features">
-
     <div class="feature-card">
-
         <div class="feature-icon">📱</div>
-
         <h3>Upload your chat</h3>
-
-        <p>Export from WhatsApp, iMessage, or Messenger — drop the .txt file, no account linking needed.</p>
-
+        <p>Export from WhatsApp, iMessage, or Messenger — drop the .txt file. No account linking needed.</p>
     </div>
-
     <div class="feature-card">
-
-        <div class="feature-icon">🎨</div>
-
-        <h3>Three platform themes</h3>
-
-        <p>WhatsApp, iMessage, and Messenger — each with authentic colours, bubbles, and headers.</p>
-
+        <div class="feature-icon">💚</div>
+        <h3>Love Messages collage</h3>
+        <p>Every message about things you love and moments you share — packed onto a themed chat card.</p>
     </div>
-
     <div class="feature-card">
-
-        <div class="feature-icon">🎴</div>
-
-        <h3>Three card types</h3>
-
-        <p>Love collages, stat infographics, or word maps — pick what tells your story best.</p>
-
+        <div class="feature-icon">🔒</div>
+        <h3>Private by design</h3>
+        <p>Auto-deleted in 30 minutes. Delete anytime. Your chats are never sold or shared.</p>
     </div>
-
 </section>
-
-
 
 <section id="how-it-works" class="how-it-works">
-
     <h2>How it works</h2>
-
     <div class="steps">
-
         <div class="step">
-
             <span class="step-num">1</span>
-
             <h4>Export your chat</h4>
-
             <p>Export from your messaging app as a .txt file (without media).</p>
-
         </div>
-
         <div class="step">
-
             <span class="step-num">2</span>
-
-            <h4>Pick the occasion &amp; card</h4>
-
-            <p>Choose birthday or anniversary, pick love messages, stats, or word map, and personalise who it's for.</p>
-
+            <h4>Upload &amp; personalise</h4>
+            <p>Upload the file, choose orientation, and tell us who the card is for.</p>
         </div>
-
         <div class="step">
-
             <span class="step-num">3</span>
-
-            <h4>Preview &amp; order a print</h4>
-
-            <p>Flip through your card pages, edit your inside message, download a print-ready PDF, then order.</p>
-
+            <h4>Preview &amp; order</h4>
+            <p>Flip through your card pages, edit your inside message, then download a PDF or order a print.</p>
         </div>
-
     </div>
-
+    <a href="{{ url_for('create') }}" class="btn btn-primary btn-lg">Get started</a>
 </section>
-
-
-
-<section class="privacy-strip">
-
-    <div class="privacy-strip-inner">
-
-        <div class="hero-badge">🔒 Your messages are 100% secure</div>
-
-        <h2>Private by design — your messages can never be stolen</h2>
-
-        <p>Your conversations are yours alone. We made sure they stay that way.</p>
-
-        <div class="privacy-points">
-
-            <div class="privacy-point"><span>🗑️</span><strong>Deleted instantly</strong><small>Your chat file is wiped the moment your card is made.</small></div>
-
-            <div class="privacy-point"><span>⏱️</span><strong>Auto-deletes in 30 min</strong><small>Cards vanish after 30 minutes of inactivity — or delete yours anytime.</small></div>
-
-            <div class="privacy-point"><span>🔐</span><strong>Encrypted &amp; private</strong><small>Encrypted at rest, behind an unguessable link. No account needed.</small></div>
-
-            <div class="privacy-point"><span>🚫</span><strong>Never sold or shared</strong><small>No ads, no trackers, never shared with anyone.</small></div>
-
-        </div>
-
-        <a href="{{ url_for('privacy') }}" class="btn btn-ghost">How we keep you safe</a>
-
-    </div>
-
-</section>
-
 {% endblock %}
 
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/hero-card.js') }}"></script>
+{% endblock %}

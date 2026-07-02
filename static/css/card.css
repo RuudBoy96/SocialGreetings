@@ -31,19 +31,12 @@
 
 
 .card-toolbar .card-stats {
-
-    color: #9ca3af;
-
+    color: var(--text-muted);
     font-size: 0.9rem;
-
 }
 
-
-
 .card-toolbar .card-stats strong {
-
-    color: #f4f4f6;
-
+    color: var(--text);
 }
 
 
@@ -59,21 +52,13 @@
 
 
 .card-page {
-
     background-size: 400px 400px;
-
     position: relative;
-
-    border: 1px dashed #bbb;
-
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
-
+    border: none;
+    box-shadow: 0 4px 16px rgba(61, 54, 50, 0.12);
     display: flex;
-
     flex-direction: column;
-
     overflow: hidden;
-
 }
 
 

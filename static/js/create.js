@@ -6,8 +6,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const submitBtn = document.getElementById('submit-btn');
     const cardForSelect = document.getElementById('card_for');
     const contactNameInput = document.getElementById('contact_name');
-    const platformSelect = document.getElementById('platform');
-    const platformHint = document.getElementById('platform-hint');
 
     if (!fileInput) return;
 
@@ -58,7 +56,6 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const formData = new FormData();
             formData.append('chat_file', file);
-            if (platformSelect) formData.append('platform', platformSelect.value);
 
             const response = await fetch('/api/preview-participants', {
                 method: 'POST',
@@ -67,11 +64,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const data = await response.json();
             populateParticipants(data.participants, data.contact_name);
-
-            if (data.platform && platformHint) {
-                const names = { whatsapp: 'WhatsApp', imessage: 'iMessage', messenger: 'Messenger' };
-                platformHint.textContent = `Detected: ${names[data.platform] || data.platform}`;
-            }
         } catch {
             /* preview is optional */
         }

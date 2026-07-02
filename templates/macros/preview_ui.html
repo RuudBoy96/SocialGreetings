@@ -1,47 +1,11 @@
-{# Mini chat headers for homepage phone mockups #}
-{% macro mini_chat_header(platform, contact_name='Alex') %}
-{% if platform == 'imessage' %}
-<header class="mini-chat-header mini-chat-header--im">
-    <span class="mini-back mini-back--im"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></span>
-    <span class="mini-avatar mini-avatar--im"></span>
-    <span class="mini-contact">
-        <span class="mini-name">{{ contact_name }}</span>
-        <span class="mini-status">iMessage</span>
-    </span>
-</header>
-{% elif platform == 'messenger' %}
-<header class="mini-chat-header mini-chat-header--ms">
-    <span class="mini-back mini-back--ms"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></span>
-    <span class="mini-avatar mini-avatar--ms"></span>
-    <span class="mini-contact">
-        <span class="mini-name">{{ contact_name }}</span>
-        <span class="mini-status mini-status--active"><span class="mini-dot"></span> Active now</span>
-    </span>
-</header>
-{% else %}
-<header class="mini-chat-header mini-chat-header--wa">
-    <span class="mini-back"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></span>
-    <span class="mini-avatar mini-avatar--wa"></span>
-    <span class="mini-contact">
-        <span class="mini-name">{{ contact_name }}</span>
-        <span class="mini-status">online</span>
-    </span>
-</header>
-{% endif %}
-{% endmacro %}
-
-{# 3D physical card wrapper #}
+{# Flat card-on-table preview wrapper #}
 {% macro card_3d_wrapper() %}
-<div class="card-3d-scene">
-    <div class="card-stack-peek card-stack-peek--prev" data-peek="prev" aria-hidden="true">
-        <span class="card-stack-peek-label"></span>
-    </div>
-    <div class="card-stack-peek card-stack-peek--next" data-peek="next" aria-hidden="true">
-        <span class="card-stack-peek-label"></span>
-    </div>
-    <div class="card-3d-wrapper">
+<div class="card-flat-scene">
+    <div class="card-edge-sliver card-edge-sliver--prev" data-peek="prev" aria-hidden="true"></div>
+    <div class="card-edge-sliver card-edge-sliver--next" data-peek="next" aria-hidden="true"></div>
+    <div class="card-flat-wrapper">
         {{ caller() }}
     </div>
-    <div class="card-3d-shadow" aria-hidden="true"></div>
+    <div class="card-flat-shadow" aria-hidden="true"></div>
 </div>
 {% endmacro %}
