@@ -1,11 +1,8 @@
-{# Flat card-on-table preview wrapper #}
+{# Moonpig-style flat card product view #}
 {% macro card_3d_wrapper() %}
-<div class="card-flat-scene">
-    <div class="card-edge-sliver card-edge-sliver--prev" data-peek="prev" aria-hidden="true"></div>
-    <div class="card-edge-sliver card-edge-sliver--next" data-peek="next" aria-hidden="true"></div>
-    <div class="card-flat-wrapper">
+<div class="card-product-scene">
+    <div class="card-product-wrapper">
         {{ caller() }}
     </div>
-    <div class="card-flat-shadow" aria-hidden="true"></div>
 </div>
 {% endmacro %}

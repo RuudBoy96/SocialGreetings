@@ -1,5 +1,5 @@
 {# Platform-aware chat headers #}
-{% macro chat_header(platform, contact_name, subtitle='online') %}
+{% macro chat_header(platform, contact_name, subtitle='online', contact_avatar=none) %}
 {% if platform == 'imessage' %}
 <header class="chat-header imessage-header">
     <div class="chat-header-left">
@@ -7,7 +7,11 @@
             <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
         </span>
         <div class="header-avatar imessage-avatar">
+            {% if contact_avatar %}
+            <img class="header-avatar-img" src="{{ contact_avatar }}" alt="">
+            {% else %}
             <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+            {% endif %}
         </div>
         <div class="header-contact">
             <span class="header-name">{{ contact_name }}</span>
@@ -26,7 +30,11 @@
             <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
         </span>
         <div class="header-avatar messenger-avatar">
+            {% if contact_avatar %}
+            <img class="header-avatar-img" src="{{ contact_avatar }}" alt="">
+            {% else %}
             <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+            {% endif %}
         </div>
         <div class="header-contact">
             <span class="header-name">{{ contact_name }}</span>
@@ -46,7 +54,11 @@
             <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
         </span>
         <div class="header-avatar">
+            {% if contact_avatar %}
+            <img class="header-avatar-img" src="{{ contact_avatar }}" alt="">
+            {% else %}
             <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+            {% endif %}
         </div>
         <div class="header-contact">
             <span class="header-name">{{ contact_name }}</span>
@@ -62,10 +74,63 @@
 {% endif %}
 {% endmacro %}
 
+{% macro chat_footer(platform) %}
+{% if platform == 'imessage' %}
+<footer class="chat-footer imessage-footer" aria-hidden="true">
+    <div class="chat-input-row">
+        <span class="chat-footer-btn imessage-plus">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        </span>
+        <div class="chat-input-field imessage-input">
+            <span class="chat-input-placeholder">iMessage</span>
+        </div>
+    </div>
+</footer>
+
+{% elif platform == 'messenger' %}
+<footer class="chat-footer messenger-footer" aria-hidden="true">
+    <div class="chat-input-row">
+        <span class="chat-footer-btn messenger-camera">
+            <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        </span>
+        <div class="chat-input-field messenger-input">
+            <span class="chat-input-placeholder">Aa</span>
+            <span class="chat-input-icons">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+            </span>
+        </div>
+        <span class="chat-footer-btn messenger-mic">
+            <svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg>
+        </span>
+    </div>
+</footer>
+
+{% else %}
+<footer class="chat-footer whatsapp-footer" aria-hidden="true">
+    <div class="chat-input-row">
+        <span class="chat-footer-btn wa-emoji">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+        </span>
+        <div class="chat-input-field wa-input">
+            <span class="chat-input-placeholder">Message</span>
+            <span class="chat-input-icons">
+                <svg viewBox="0 0 24 24"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
+                <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            </span>
+        </div>
+        <span class="chat-footer-btn wa-mic">
+            <svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg>
+        </span>
+    </div>
+</footer>
+{% endif %}
+{% endmacro %}
+
 {% macro card_back_logo() %}
 <div class="card-page-back">
     <div class="back-logo">
         <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="SocialGreetings" class="sg-logo">
+        <p class="back-slogan">Turn your conversations into keepsakes.</p>
     </div>
 </div>
 {% endmacro %}

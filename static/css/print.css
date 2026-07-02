@@ -31,7 +31,9 @@
     .footer,
     .card-toolbar,
     .presenter-controls,
-    .inside-editor-panel,
+    .page-thumb-strip,
+    .card-loading-overlay,
+    .personalise-panel,
     .no-print,
     .flash-container,
     .order-page-actions,
@@ -54,29 +56,42 @@
         border: none !important;
     }
 
-    .card-flat-scene {
+    .card-flat-scene,
+    .card-product-scene {
         padding: 0 !important;
         min-height: 0 !important;
         perspective: none !important;
     }
 
-    .card-flat-wrapper {
+    .card-flat-wrapper,
+    .card-product-wrapper {
         transform: none !important;
         filter: none !important;
+        max-width: none !important;
+        box-shadow: none !important;
+        cursor: default !important;
+        overflow: visible !important;
     }
 
-    .carousel-viewport {
+    .card-product-wrapper .card-page {
+        transform: none !important;
+    }
+
+    .carousel-viewport,
+    .card-viewer-viewport {
         overflow: visible !important;
         background: none !important;
         padding: 0 !important;
     }
 
-    .carousel-track {
+    .carousel-track,
+    .card-viewer-track {
         display: block !important;
         transform: none !important;
     }
 
-    .carousel-slide {
+    .carousel-slide,
+    .card-viewer-slide {
         display: flex !important;
         justify-content: center;
         align-items: center;
@@ -90,7 +105,8 @@
         height: auto !important;
     }
 
-    .carousel-slide--optional:not(.is-visible) {
+    .carousel-slide--optional:not(.is-visible),
+    .card-viewer-slide--optional:not(.is-visible) {
         display: none !important;
     }
 

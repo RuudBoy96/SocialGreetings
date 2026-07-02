@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% from "macros/chat_header.html" import chat_header, card_back_logo, card_inside %}
+{% from "macros/chat_header.html" import chat_header, chat_footer, card_back_logo, card_inside %}
 {% from "macros/carousel.html" import carousel_controls, inside_editor_panel %}
 {% from "macros/preview_ui.html" import card_3d_wrapper %}
 
@@ -41,29 +41,36 @@
     <div class="presenter-layout">
         <div class="presenter-main">
             <div class="presenter-stage">
-                <div class="carousel-viewport" id="carousel-viewport">
-                    <div class="carousel-track" id="carousel-track">
-                        <div class="carousel-slide" data-slide-type="front">
+                <div class="card-loading-overlay" id="card-loading-overlay">
+                    <div class="card-loading-spinner" aria-hidden="true"></div>
+                    <p>Building your card…</p>
+                </div>
+
+                <div class="card-viewer-viewport carousel-viewport" id="card-viewer-viewport">
+                    <div class="card-viewer-track carousel-track" id="card-viewer-track">
+                        <div class="card-viewer-slide carousel-slide is-active" data-slide-type="front">
                             {% call card_3d_wrapper() %}
                             <div class="card-page orientation-{{ card.orientation|default('portrait') }}"
                                  data-platform="{{ card.platform|default('whatsapp') }}">
-                                {{ chat_header(card.platform|default('whatsapp'), card.contact_name) }}
+                                {{ chat_header(card.platform|default('whatsapp'), card.contact_name, contact_avatar=card.contact_avatar|default(none)) }}
                                 <div class="chat-body collage-body" id="chat-page-1"></div>
+                                {{ chat_footer(card.platform|default('whatsapp')) }}
                             </div>
                             {% endcall %}
                         </div>
 
-                        <div class="carousel-slide carousel-slide--optional" id="carousel-slide-2" data-slide-type="front2">
+                        <div class="card-viewer-slide carousel-slide card-viewer-slide--optional carousel-slide--optional" id="carousel-slide-2" data-slide-type="front2">
                             {% call card_3d_wrapper() %}
                             <div class="card-page orientation-{{ card.orientation|default('portrait') }}"
                                  data-platform="{{ card.platform|default('whatsapp') }}">
-                                {{ chat_header(card.platform|default('whatsapp'), card.contact_name) }}
+                                {{ chat_header(card.platform|default('whatsapp'), card.contact_name, contact_avatar=card.contact_avatar|default(none)) }}
                                 <div class="chat-body collage-body" id="chat-page-2"></div>
+                                {{ chat_footer(card.platform|default('whatsapp')) }}
                             </div>
                             {% endcall %}
                         </div>
 
-                        <div class="carousel-slide" data-slide-type="inside">
+                        <div class="card-viewer-slide carousel-slide" data-slide-type="inside">
                             {% call card_3d_wrapper() %}
                             <div class="card-page orientation-{{ card.orientation|default('portrait') }}"
                                  data-platform="{{ card.platform|default('whatsapp') }}">
@@ -72,7 +79,7 @@
                             {% endcall %}
                         </div>
 
-                        <div class="carousel-slide" data-slide-type="back">
+                        <div class="card-viewer-slide carousel-slide" data-slide-type="back">
                             {% call card_3d_wrapper() %}
                             <div class="card-page orientation-{{ card.orientation|default('portrait') }}"
                                  data-platform="{{ card.platform|default('whatsapp') }}">
@@ -107,12 +114,14 @@
 {% block extra_js %}
 <script src="{{ url_for('static', filename='js/card.js') }}"></script>
 <script src="{{ url_for('static', filename='js/presenter.js') }}"></script>
+<script src="{{ url_for('static', filename='js/card-zoom.js') }}"></script>
+<script src="{{ url_for('static', filename='js/card-avatar.js') }}"></script>
 <script src="{{ url_for('static', filename='js/card_session.js') }}"></script>
 <script>
 function initCardCarousel() {
     if (window._cardCarousel) return;
     const cardData = JSON.parse(document.getElementById('card-data').textContent);
-    window._cardCarousel = new CardCarousel({ cardId: cardData.card_id });
+    window._cardCarousel = new CardViewer({ cardId: cardData.card_id });
 
     const params = new URLSearchParams(window.location.search);
     if (params.get('print') === '1' || params.get('pdf') === '1') {
