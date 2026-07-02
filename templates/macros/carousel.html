@@ -1,23 +1,36 @@
-{# Carousel controls with page slider #}
+{# Moonpig-style page navigation with thumbnail strip #}
 {% macro carousel_controls() %}
-<div class="presenter-controls no-print">
-    <button class="presenter-btn" id="btn-prev" type="button" aria-label="Previous page">‹</button>
-    <div class="page-slider-wrap">
+<div class="presenter-controls no-print" id="presenter-controls">
+    <button class="presenter-btn" id="btn-prev" type="button" aria-label="Previous page" disabled>‹</button>
+    <div class="page-label-wrap">
         <span class="slide-counter" id="slide-counter">1 / 3</span>
-        <input type="range" class="page-slider" id="page-slider" min="0" max="2" value="0" step="1" aria-label="Card page">
         <div class="page-labels" id="page-labels"></div>
     </div>
     <button class="presenter-btn" id="btn-next" type="button" aria-label="Next page">›</button>
 </div>
+<div class="page-thumb-strip no-print" id="page-thumb-strip" aria-label="Card page thumbnails"></div>
 {% endmacro %}
 
 {% macro inside_editor_panel(inside_message, inside_font, inside_font_size, inside_fonts, inside_font_sizes) %}
-<div class="inside-editor-panel no-print" id="inside-editor-panel">
-    <div class="inside-editor-header">
-        <h3>Inside message</h3>
-        <p>Type below — your card updates live when you're on the Inside page</p>
+<div class="personalise-panel no-print" id="personalise-panel">
+    <div class="personalise-header">
+        <h3>Personalise your card</h3>
+        <p>Add a contact photo, write your inside message, and choose a font.</p>
     </div>
-    <textarea id="inside-message-edit" rows="3" placeholder="Write something from the heart…">{{ inside_message }}</textarea>
+
+    <div class="personalise-row">
+        <label class="personalise-label">Contact photo</label>
+        <div class="avatar-upload-wrap">
+            <input type="file" id="avatar-file-input" accept="image/jpeg,image/png,image/webp" aria-hidden="true">
+            <button type="button" id="btn-add-avatar" class="btn btn-ghost btn-sm">Add contact photo</button>
+        </div>
+    </div>
+
+    <div class="personalise-row">
+        <label class="personalise-label" for="inside-message-edit">Inside message</label>
+        <textarea id="inside-message-edit" rows="3" placeholder="Write something from the heart…">{{ inside_message }}</textarea>
+    </div>
+
     <div class="editor-row">
         <div>
             <label for="inside-font-edit">Font</label>

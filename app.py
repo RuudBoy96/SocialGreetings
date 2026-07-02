@@ -60,19 +60,23 @@ def render_card_pdf(page_url: str, orientation: str) -> bytes:
             page.wait_for_timeout(1200)
             page.add_style_tag(content=(
                 f"@page {{ size: {width} {height}; margin: 0; }}"
-                ".card-flat-shadow, .card-edge-sliver { display: none !important; }"
+                ".card-loading-overlay, .card-flat-shadow, .card-edge-sliver,"
+                ".page-thumb-strip, .presenter-controls { display: none !important; }"
                 ".card-viewer, .presenter-layout, .presenter-main, .presenter-stage,"
-                " .carousel-viewport, .carousel-track, .card-flat-scene, .card-flat-wrapper {"
+                " .carousel-viewport, .carousel-track, .card-viewer-viewport, .card-viewer-track,"
+                " .card-product-scene, .card-product-wrapper, .card-flat-scene, .card-flat-wrapper {"
                 " overflow: visible !important; transform: none !important;"
                 " perspective: none !important; height: auto !important; min-height: 0 !important;"
                 " display: block !important; padding: 0 !important; margin: 0 !important; }"
-                f".carousel-slide {{ display: block !important; height: calc({height} - 2px) !important;"
+                f".carousel-slide, .card-viewer-slide {{ display: block !important; height: calc({height} - 2px) !important;"
                 " min-height: 0 !important; overflow: hidden !important;"
                 " padding: 0 !important; margin: 0 !important;"
                 " page-break-after: always !important; break-after: page !important;"
                 " break-inside: avoid !important; page-break-inside: avoid !important; }"
-                ".carousel-slide:last-child { page-break-after: avoid !important;"
+                ".carousel-slide:last-child, .card-viewer-slide:last-child { page-break-after: avoid !important;"
                 " break-after: avoid !important; }"
+                ".carousel-slide--optional:not(.is-visible),"
+                ".card-viewer-slide--optional:not(.is-visible) { display: none !important; }"
                 f".card-page {{ width: {width} !important; height: calc({height} - 2px) !important;"
                 " max-width: none !important; min-height: 0 !important;"
                 " box-sizing: border-box !important; overflow: hidden !important; }"
@@ -397,6 +401,35 @@ def update_card(card_id: str):
     save_card_data(card_id, card_data)
     touch_card(card_id)
     return jsonify({"ok": True, "expires_at": card_data.get("expires_at")})
+
+
+MAX_AVATAR_BYTES = 500 * 1024
+ALLOWED_AVATAR_TYPES = {"image/jpeg", "image/png", "image/webp"}
+
+
+@app.route("/api/card/<card_id>/avatar", methods=["POST"])
+def upload_avatar(card_id: str):
+    card_data = load_card_data(card_id)
+    if not card_data:
+        return jsonify({"error": "Not found"}), 404
+
+    file = request.files.get("avatar")
+    if not file or not file.filename:
+        return jsonify({"error": "No image uploaded"}), 400
+
+    mime = file.mimetype or ""
+    if mime not in ALLOWED_AVATAR_TYPES:
+        return jsonify({"error": "Image must be JPEG, PNG, or WebP"}), 400
+
+    raw = file.read()
+    if len(raw) > MAX_AVATAR_BYTES:
+        return jsonify({"error": "Image must be 500 KB or smaller"}), 400
+
+    data_url = f"data:{mime};base64,{base64.b64encode(raw).decode('ascii')}"
+    card_data["contact_avatar"] = data_url
+    save_card_data(card_id, card_data)
+    touch_card(card_id)
+    return jsonify({"ok": True, "contact_avatar": data_url})
 
 
 @app.route("/api/card/<card_id>", methods=["DELETE"])

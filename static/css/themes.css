@@ -5,8 +5,8 @@
     --chat-header-text: #ffffff;
     --chat-header-status: rgba(255, 255, 255, 0.85);
     --chat-bg: #efeae2;
-    --chat-bg-image: url("../img/whatsapp-wallpaper.svg");
-    --chat-bg-size: 300px 300px;
+    --chat-bg-image: none;
+    --chat-bg-size: auto;
     --chat-sent: #d9fdd3;
     --chat-sent-text: #111b21;
     --chat-received: #ffffff;
@@ -23,8 +23,17 @@
     --chat-sent: #d9fdd3;
     --chat-received: #ffffff;
     --chat-bg: #efeae2;
-    --chat-bg-image: url("../img/whatsapp-wallpaper.svg");
-    --chat-bg-size: 300px 300px;
+    --chat-bg-image: url("../img/whatsapp-wallpaper.png");
+    --chat-bg-size: 100% auto;
+    background-image: none;
+    background-color: #efeae2;
+}
+
+.card-page[data-platform="whatsapp"] .chat-body {
+    background-color: var(--chat-bg);
+    background-image: var(--chat-bg-image);
+    background-size: var(--chat-bg-size);
+    background-repeat: repeat;
 }
 
 .card-page[data-platform="imessage"] {
@@ -153,6 +162,14 @@
     width: 20px;
     height: 20px;
     fill: #8696a0;
+}
+
+.header-avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    display: block;
 }
 
 .header-contact {
@@ -295,13 +312,197 @@
 
 .back-logo {
     position: absolute;
-    bottom: 22px;
-    right: 22px;
-    opacity: 0.9;
+    bottom: 20px;
+    right: 20px;
+    left: auto;
+    text-align: right;
+    opacity: 0.95;
 }
 
-.sg-logo { height: 22px; width: auto; display: block; max-width: calc(100% - 44px); }
+.sg-logo { height: auto; width: auto; display: block; max-width: 100px; margin-left: auto; }
+
+.back-slogan {
+    margin: 3px 0 0;
+    font-size: 7px;
+    line-height: 1.3;
+    color: #8f4550;
+    opacity: 0.85;
+    font-family: Inter, -apple-system, sans-serif;
+    font-weight: 500;
+}
 
 .card-page-back {
     overflow: visible;
+}
+
+/* ── Chat footer / input bar ── */
+
+.chat-footer {
+    flex-shrink: 0;
+    z-index: 10;
+}
+
+.chat-input-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 8px;
+}
+
+.chat-input-field {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 32px;
+    padding: 0 12px;
+    border-radius: 20px;
+    font-size: 14px;
+    line-height: 1;
+}
+
+.chat-input-placeholder {
+    color: #8696a0;
+    font-size: 14px;
+}
+
+.chat-input-icons {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+.chat-input-icons svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: #8696a0;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.chat-footer-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.chat-footer-btn svg {
+    width: 22px;
+    height: 22px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* WhatsApp footer */
+.whatsapp-footer {
+    background: #f0f2f5;
+}
+
+.whatsapp-footer .chat-input-row {
+    padding: 4px 6px 6px;
+    gap: 5px;
+}
+
+.wa-emoji svg {
+    stroke: #8696a0;
+    width: 24px;
+    height: 24px;
+}
+
+.wa-input {
+    background: #ffffff;
+    border-radius: 24px;
+    min-height: 34px;
+    padding: 0 10px 0 14px;
+}
+
+.wa-mic {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #008069;
+    color: #ffffff;
+}
+
+.wa-mic svg {
+    width: 18px;
+    height: 18px;
+    stroke: #ffffff;
+}
+
+/* iMessage footer */
+.imessage-footer {
+    background: #f6f6f6;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.imessage-footer .chat-input-row {
+    padding: 6px 8px 8px;
+    gap: 8px;
+}
+
+.imessage-plus svg {
+    stroke: #007aff;
+    width: 28px;
+    height: 28px;
+    fill: none;
+}
+
+.imessage-input {
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 18px;
+    min-height: 34px;
+}
+
+.imessage-input .chat-input-placeholder {
+    color: #8e8e93;
+}
+
+/* Messenger footer */
+.messenger-footer {
+    background: #ffffff;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.messenger-footer .chat-input-row {
+    padding: 6px 8px 8px;
+    gap: 8px;
+}
+
+.messenger-camera svg {
+    stroke: #0084ff;
+    width: 24px;
+    height: 24px;
+}
+
+.messenger-input {
+    background: #f0f0f0;
+    border-radius: 20px;
+    min-height: 34px;
+}
+
+.messenger-input .chat-input-placeholder {
+    color: #65676b;
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.messenger-input .chat-input-icons svg {
+    stroke: #0084ff;
+    width: 20px;
+    height: 20px;
+}
+
+.messenger-mic svg {
+    stroke: #0084ff;
+    width: 22px;
+    height: 22px;
 }

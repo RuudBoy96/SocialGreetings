@@ -9,6 +9,9 @@
     --accent: #8fa88a;
     --accent-2: #d4a574;
     --gradient: linear-gradient(135deg, #c97b84 0%, #e8a598 45%, #f5d0c5 100%);
+    --gradient-text: linear-gradient(135deg, #a85563 0%, #8f4550 55%, #7d3f4a 100%);
+    --gradient-btn: linear-gradient(135deg, #b86a73 0%, #c97b84 50%, #d4959c 100%);
+    --btn-solid: #b86a73;
     --radius: 16px;
     --shadow: 0 8px 32px rgba(61, 54, 50, 0.1);
     --danger: #c45c5c;
@@ -51,7 +54,8 @@ a {
     gap: 0.5rem;
     font-weight: 800;
     font-size: 1.25rem;
-    background: var(--gradient);
+    color: #8f4550;
+    background: var(--gradient-text);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -96,9 +100,11 @@ a {
 }
 
 .btn-primary {
-    background: var(--gradient);
-    color: white;
-    box-shadow: 0 4px 20px rgba(201, 123, 132, 0.3);
+    background: var(--btn-solid);
+    background-image: var(--gradient-btn);
+    color: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 20px rgba(184, 106, 115, 0.35);
 }
 
 .btn-primary:hover {
@@ -210,7 +216,8 @@ a {
 }
 
 .gradient-text {
-    background: var(--gradient);
+    color: #8f4550;
+    background: var(--gradient-text);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -355,8 +362,8 @@ a {
 
 .phone-screen--wa {
     background-color: #efeae2;
-    background-image: url("../img/whatsapp-wallpaper.svg");
-    background-size: 200px 200px;
+    background-image: url("../img/whatsapp-wallpaper.png");
+    background-size: 100% auto;
     background-repeat: repeat;
 }
 
@@ -1120,6 +1127,7 @@ a {
     gap: 0.75rem;
     justify-content: center;
     flex-wrap: wrap;
+    margin-top: 1.25rem;
 }
 
 .privacy-trust--compact {

@@ -8,37 +8,33 @@ const SLIDE_LABELS = {
     back: 'Back cover',
 };
 
-class CardCarousel {
+class CardViewer {
     constructor(options) {
         this.cardId = options.cardId;
-        this.track = document.getElementById('carousel-track');
-        this.viewport = document.getElementById('carousel-viewport');
+        this.viewport = document.getElementById('card-viewer-viewport');
+        this.track = document.getElementById('card-viewer-track');
         this.counterEl = document.getElementById('slide-counter');
         this.btnPrev = document.getElementById('btn-prev');
         this.btnNext = document.getElementById('btn-next');
-        this.pageSlider = document.getElementById('page-slider');
         this.pageLabels = document.getElementById('page-labels');
-        this.insidePanel = document.getElementById('inside-editor-panel');
+        this.thumbStrip = document.getElementById('page-thumb-strip');
+        this.controls = document.getElementById('presenter-controls');
+        this.insidePanel = document.getElementById('personalise-panel');
         this.insideInput = document.getElementById('inside-message-edit');
         this.fontSelect = document.getElementById('inside-font-edit');
         this.sizeSelect = document.getElementById('inside-font-size-edit');
         this.saveBtn = document.getElementById('btn-save');
         this.saveStatus = document.getElementById('save-status');
         this.insideContent = document.querySelector('.inside-content');
+        this.loadingOverlay = document.getElementById('card-loading-overlay');
         this.current = 0;
-        this.touchStartX = 0;
+        this.loaded = false;
         this.slides = [];
         this._refitTimer = null;
 
-        this.refreshSlides();
         this.bindControls();
         this.setupInsideEditor();
-        this.goTo(0, false);
-
-        window.addEventListener('resize', () => {
-            this.setSlideWidths();
-            this.goTo(this.current, false);
-        });
+        this.refreshSlides();
 
         window.addEventListener('card-render-complete', (e) => {
             const slide2 = document.getElementById('carousel-slide-2');
@@ -46,36 +42,40 @@ class CardCarousel {
                 slide2.classList.add('is-visible');
             }
             this.refreshSlides();
+            this.buildThumbnails();
+            this.setLoaded(true);
+            this.goTo(this.current, false);
+        });
+
+        const page1 = document.getElementById('chat-page-1');
+        if (page1?.querySelector('.message')) {
+            this.refreshSlides();
+            this.buildThumbnails();
+            this.setLoaded(true);
+            this.goTo(0, false);
+        }
+    }
+
+    setLoaded(loaded) {
+        this.loaded = loaded;
+        this.loadingOverlay?.classList.toggle('is-hidden', loaded);
+        this.controls?.classList.toggle('is-disabled', !loaded);
+        this.thumbStrip?.classList.toggle('is-disabled', !loaded);
+        document.querySelectorAll('.card-product-wrapper').forEach((el) => {
+            el.classList.toggle('is-zoom-disabled', !loaded);
         });
     }
 
     refreshSlides() {
         this.slides = Array.from(
-            document.querySelectorAll('.carousel-slide:not(.carousel-slide--optional), .carousel-slide--optional.is-visible')
+            document.querySelectorAll('.card-viewer-slide:not(.card-viewer-slide--optional), .card-viewer-slide--optional.is-visible')
         );
-        this.updateSliderRange();
-        this.setSlideWidths();
         if (this.current >= this.slides.length) {
             this.current = Math.max(0, this.slides.length - 1);
         }
-        this.goTo(this.current, false);
-    }
-
-    updateSliderRange() {
-        if (!this.pageSlider) return;
-        const max = Math.max(0, this.slides.length - 1);
-        this.pageSlider.max = max;
-        this.pageSlider.value = Math.min(this.current, max);
-    }
-
-    setSlideWidths() {
-        if (!this.viewport) return;
-        const w = this.viewport.clientWidth;
-        this.slides.forEach((slide) => {
-            slide.style.width = `${w}px`;
-            slide.style.minWidth = `${w}px`;
-            slide.style.flexBasis = `${w}px`;
-        });
+        if (this.loaded) {
+            this.goTo(this.current, false);
+        }
     }
 
     bindControls() {
@@ -83,28 +83,11 @@ class CardCarousel {
         this.btnNext?.addEventListener('click', () => this.next());
         this.saveBtn?.addEventListener('click', () => this.saveEdits());
 
-        this.pageSlider?.addEventListener('input', () => {
-            this.goTo(parseInt(this.pageSlider.value, 10));
-        });
-
         document.addEventListener('keydown', (e) => {
+            if (!this.loaded) return;
             if (e.key === 'ArrowLeft') this.prev();
             if (e.key === 'ArrowRight') this.next();
         });
-
-        if (this.viewport) {
-            this.viewport.addEventListener('touchstart', (e) => {
-                this.touchStartX = e.changedTouches[0].screenX;
-            }, { passive: true });
-
-            this.viewport.addEventListener('touchend', (e) => {
-                const diff = e.changedTouches[0].screenX - this.touchStartX;
-                if (Math.abs(diff) > 50) {
-                    if (diff < 0) this.next();
-                    else this.prev();
-                }
-            }, { passive: true });
-        }
     }
 
     setupInsideEditor() {
@@ -140,35 +123,13 @@ class CardCarousel {
         return SLIDE_LABELS[type] || 'Page';
     }
 
-    updateFlatTilt(index) {
-        this.slides.forEach((slide, i) => {
-            const wrapper = slide.querySelector('.card-flat-wrapper');
-            if (!wrapper) return;
-            wrapper.classList.remove('tilt-open');
-            if (i === index && slide.dataset.slideType === 'inside') {
-                wrapper.classList.add('tilt-open');
-            }
-        });
-    }
-
     goTo(index, animate = true) {
         if (index < 0 || index >= this.slides.length) return;
         this.current = index;
 
-        const slideWidth = this.viewport?.clientWidth || 0;
-        if (this.track && slideWidth > 0) {
-            if (!animate) this.track.style.transition = 'none';
-            this.track.style.transform = `translateX(-${index * slideWidth}px)`;
-            if (!animate) {
-                requestAnimationFrame(() => {
-                    this.track.style.transition = '';
-                });
-            }
-        }
-
-        if (this.pageSlider) {
-            this.pageSlider.value = index;
-        }
+        this.slides.forEach((slide, i) => {
+            slide.classList.toggle('is-active', i === index);
+        });
 
         if (this.counterEl) {
             this.counterEl.textContent = `${index + 1} / ${this.slides.length}`;
@@ -182,11 +143,47 @@ class CardCarousel {
         if (this.btnPrev) this.btnPrev.disabled = index === 0;
         if (this.btnNext) this.btnNext.disabled = index === this.slides.length - 1;
 
+        this.thumbStrip?.querySelectorAll('.page-thumb').forEach((thumb, i) => {
+            thumb.classList.toggle('is-active', i === index);
+        });
+
         const onInside = this.slides[index]?.dataset.slideType === 'inside';
         this.insidePanel?.classList.toggle('is-highlight', onInside);
-        this.updateFlatTilt(index);
-        this.updateEdgeSliver(index);
         this.scheduleRefit(index);
+
+        if (animate) {
+            void this.viewport?.offsetHeight;
+        }
+    }
+
+    buildThumbnails() {
+        if (!this.thumbStrip) return;
+        this.thumbStrip.innerHTML = '';
+
+        this.slides.forEach((slide, index) => {
+            const cardPage = slide.querySelector('.card-page');
+            if (!cardPage) return;
+
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'page-thumb';
+            btn.setAttribute('aria-label', this.getSlideLabel(slide));
+            if (index === this.current) btn.classList.add('is-active');
+
+            const inner = document.createElement('div');
+            inner.className = 'page-thumb-inner';
+            const clone = cardPage.cloneNode(true);
+            inner.appendChild(clone);
+
+            const label = document.createElement('span');
+            label.className = 'page-thumb-label';
+            label.textContent = this.getSlideLabel(slide).replace(' cover', '').replace(' message', '');
+
+            btn.appendChild(inner);
+            btn.appendChild(label);
+            btn.addEventListener('click', () => this.goTo(index));
+            this.thumbStrip.appendChild(btn);
+        });
     }
 
     scheduleRefit(index) {
@@ -201,29 +198,13 @@ class CardCarousel {
         if (chatBody) {
             const msgCount = chatBody.querySelectorAll('.message').length;
             const opts = slide.dataset.slideType === 'front2'
-                ? { startFontSize: 11 * 0.82 }
+                ? { startFontSize: 11 * 0.75, isPage2: true }
                 : {};
-            if (slide.dataset.slideType === 'front2' && msgCount > 80) {
-                opts.startFontSize = 11 * 0.72;
+            if (slide.dataset.slideType === 'front2' && msgCount > 60) {
+                opts.startFontSize = 11 * 0.68;
             }
             window.refitChatPage(chatBody, opts);
         }
-    }
-
-    updateEdgeSliver(index) {
-        document.querySelectorAll('.card-flat-scene').forEach((scene) => {
-            const prevSliver = scene.querySelector('[data-peek="prev"]');
-            const nextSliver = scene.querySelector('[data-peek="next"]');
-            const sceneSlide = scene.closest('.carousel-slide');
-            const slideIndex = this.slides.indexOf(sceneSlide);
-            if (slideIndex < 0) return;
-
-            const showPrev = slideIndex === index && index > 0;
-            const showNext = slideIndex === index && index < this.slides.length - 1;
-
-            if (prevSliver) prevSliver.classList.toggle('is-visible', showPrev);
-            if (nextSliver) nextSliver.classList.toggle('is-visible', showNext);
-        });
     }
 
     next() {
@@ -257,4 +238,5 @@ class CardCarousel {
     }
 }
 
-window.CardCarousel = CardCarousel;
+window.CardViewer = CardViewer;
+window.CardCarousel = CardViewer;

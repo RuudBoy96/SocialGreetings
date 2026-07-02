@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 110 28" role="img" aria-label="SocialGreetings">
+  <defs>
+    <linearGradient id="sgCompact" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#a85563"/>
+      <stop offset="100%" style="stop-color:#7d3f4a"/>
+    </linearGradient>
+  </defs>
+  <text x="0" y="21" font-family="Inter, -apple-system, sans-serif" font-size="15" font-weight="800" fill="url(#sgCompact)">SocialGreetings</text>
+</svg>

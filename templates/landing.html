@@ -4,7 +4,8 @@
 {% block title %}SocialGreetings — Love Messages cards{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/hero-card.css') }}">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Playfair+Display:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/card_film.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -31,7 +32,7 @@
         </div>
     </div>
     <div class="hero-preview">
-        {% include "partials/hero_card_demo.html" %}
+        {% include "partials/card_film.html" %}
     </div>
 </section>
 
@@ -76,8 +77,4 @@
     </div>
     <a href="{{ url_for('create') }}" class="btn btn-primary btn-lg">Get started</a>
 </section>
-{% endblock %}
-
-{% block extra_js %}
-<script src="{{ url_for('static', filename='js/hero-card.js') }}"></script>
 {% endblock %}

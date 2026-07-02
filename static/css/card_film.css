@@ -9,14 +9,14 @@
     background-image: url('../img/card_film_backdrop.png');
     background-size: cover;
     background-position: center;
-    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+    box-shadow: 0 20px 48px rgba(61, 54, 50, 0.22);
 }
 
 .card-film::after {
     content: "";
     position: absolute;
     inset: 0;
-    background: radial-gradient(circle at 50% 45%, transparent 40%, rgba(0, 0, 0, 0.28));
+    background: radial-gradient(circle at 50% 45%, transparent 45%, rgba(61, 54, 50, 0.12));
     pointer-events: none;
 }
 
@@ -89,7 +89,45 @@
     gap: 3px;
     align-content: flex-start;
     padding: 6px 5px;
-    background: #d9d2c8;
+    background-color: #efeae2;
+    background-image: url('../img/whatsapp-wallpaper.png');
+    background-size: 100% auto;
+    background-repeat: repeat;
+}
+
+.cf-footer {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    padding: 2px 3px 3px;
+    background: #f0f2f5;
+    flex-shrink: 0;
+}
+
+.cf-footer-emoji {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: 1px solid #8696a0;
+    flex-shrink: 0;
+}
+
+.cf-footer-input {
+    flex: 1;
+    background: #fff;
+    border-radius: 8px;
+    font-size: 5px;
+    color: #8696a0;
+    padding: 2px 5px;
+    line-height: 1.2;
+}
+
+.cf-footer-mic {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #008069;
+    flex-shrink: 0;
 }
 
 .cf-bubble {
@@ -141,23 +179,26 @@
 
 /* ---- Back cover ---- */
 .cf-page--back {
-    background: linear-gradient(160deg, #1a1a22, #2a2336);
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
+    background: #faf8f5;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: flex-end;
+    gap: 3px;
+    padding: 10%;
     z-index: 3;
     animation: cfBack 12s ease-in-out infinite;
 }
 
 .cf-logo {
-    font-size: 9px;
+    font-size: 8px;
     font-weight: 800;
-    color: #fff;
+    color: #8f4550;
+    font-family: Inter, -apple-system, sans-serif;
 }
 
 .cf-back-sub {
-    font-size: 6px;
-    color: #b9a9d6;
+    font-size: 5.5px;
+    color: #a85563;
     letter-spacing: 0.04em;
 }
 
@@ -166,14 +207,14 @@
     left: 50%;
     bottom: 14px;
     transform: translateX(-50%);
-    background: rgba(15, 15, 18, 0.7);
+    background: rgba(250, 247, 242, 0.88);
     backdrop-filter: blur(6px);
-    color: #fff;
+    color: #7d3f4a;
     font-size: 0.72rem;
     font-weight: 600;
     padding: 0.35rem 0.85rem;
     border-radius: 999px;
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(168, 85, 99, 0.2);
     white-space: nowrap;
 }
 
