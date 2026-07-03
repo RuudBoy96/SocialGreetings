@@ -15,13 +15,13 @@
     </div>
 
     <form class="create-form" action="{{ url_for('create_wordmap') }}" method="post" enctype="multipart/form-data" id="create-form">
-        <div class="upload-zone" id="upload-zone">
-            <input type="file" name="chat_file" id="chat_file" accept=".txt" required>
+        <label class="upload-zone" id="upload-zone" for="chat_file">
+            <input type="file" name="chat_file" id="chat_file" accept=".txt,text/plain" required>
             <div class="upload-icon">📄</div>
             <p class="upload-title">Drop your chat export here</p>
             <p class="upload-hint">We analyse every message — not just love notes</p>
             <p class="upload-filename" id="upload-filename"></p>
-        </div>
+        </label>
 
         <p class="upload-trust">🔒 Your messages are 100% secure — your file is deleted the instant your card is made. <a href="{{ url_for('privacy') }}">How we protect you</a></p>
 

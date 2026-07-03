@@ -14,13 +14,13 @@
     {{ privacy_trust(compact=true) }}
 
     <form class="create-form" action="{{ url_for('create') }}" method="post" enctype="multipart/form-data" id="create-form">
-        <div class="upload-zone" id="upload-zone">
-            <input type="file" name="chat_file" id="chat_file" accept=".txt" required>
+        <label class="upload-zone" id="upload-zone" for="chat_file">
+            <input type="file" name="chat_file" id="chat_file" accept=".txt,text/plain" required>
             <div class="upload-icon">📄</div>
             <p class="upload-title">Drop your chat export here</p>
             <p class="upload-hint">WhatsApp, iMessage, or Messenger — .txt files · we auto-detect the platform</p>
             <p class="upload-filename" id="upload-filename"></p>
-        </div>
+        </label>
 
         <div class="form-section" id="options-section" hidden>
             <h3>Layout &amp; personalise</h3>
