@@ -813,6 +813,7 @@ a {
 }
 
 .upload-zone {
+    display: block;
     position: relative;
     border: 2px dashed rgba(201, 123, 132, 0.4);
     border-radius: var(--radius);
@@ -832,9 +833,14 @@ a {
 
 .upload-zone input[type="file"] {
     position: absolute;
-    inset: 0;
-    opacity: 0;
-    cursor: pointer;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
 }
 
 .upload-icon {
